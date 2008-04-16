@@ -1,1 +1,63 @@
-function [vallu] = input_dke_yp(string,vd)%%	Customized input function with default value ****%%	Input:%%		- string: description of the parameter (string) [1,m]%		- vd: default value of the parameter [1,1]%%	Output:%%		- vallu: value of the parameter transffered to the program [1,1]%		  (same type as vd)%%%by Y.PEYSSON CEA-DRFC 15/10/1991 <peysson@drfc.cad.cea.fr>%revised for MatLab 4.1 (14/09/1994)%revised for MatLab 5.2 (31/08/2000) %if nargin < 0,	infoyp(2,'Wrong number of input arguments for input_dke_yp');	return;end%if isempty(vd),	vd = nan;end%char = isstr(vd);vallu = nan;while isnan(vallu), 	if char==0,  		rep = input(sprintf([string ' ? <%g> '],vd)); 	else  		rep = input(sprintf([string ' ? <',vd,'> '],vd),'s'); 	end 	if~isempty(rep),  		vallu = rep; 	else  		vallu = vd; 	endend
+function [vallu] = input_dke_yp(string,default,values,message)
+%
+%	Customized input function with default value
+%
+%	Input:
+%
+%		- string: description of the parameter (string) [1,m]
+%		- default: default value of the parameter [1,1]
+%       - values: set of possibles values (cells)
+%       - message: warning message (string) [1,m]
+%
+%	Output:
+%
+%		- vallu: value of the parameter transfered to the program [1,1]
+%		  (same type as vd)
+%
+%by Y.PEYSSON CEA/DSM/IRFM <yves.peysson@cea.fr>
+%
+if nargin == 0,
+	infoyp(2,'Wrong number of input arguments for input_dke_yp');
+	return;
+elseif nargin == 1,
+    default = NaN;
+    values = NaN;
+    message = '';
+elseif nargin == 2,
+    values = NaN;
+    message = '';
+elseif nargin == 3,
+    message = '';
+end
+%
+if isempty(default),
+	default = NaN;
+end
+%
+chartype = isstr(default);
+vallu = '';
+%
+while isempty(vallu),
+ 	if chartype == 0,
+  		rep = input(sprintf([string ' ? <%g> '],default));
+ 	else
+  		rep = input(sprintf([string ' ? <',default,'> '],default),'s');
+ 	end
+ 	if ~isempty(rep),
+        flag = 0;
+        for ii = 1:length(values),
+            if chartype == 0,
+                if values{ii} == rep,flag = 1;break;end
+            else
+                if strcmp(rep,values{ii});flag = 1;break;end
+            end
+        end
+  		if flag == 1,
+            vallu = rep;
+        else
+            disp(['Warning: ',message]);
+        end
+ 	else
+  		vallu = default;
+ 	end
+end
