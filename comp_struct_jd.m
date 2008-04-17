@@ -1,106 +1,175 @@
-function comp_struct_jd(struct1,struct2);
+function totcomp = comp_struct_jd(struct1,struct2,display_mode,str1,str2)
+%
+if nargin < 5,
+    str2 = '';
+end
+if nargin < 4,
+    str1 = '';
+end
+if nargin < 3,
+    display_mode = 1;
+end
+if nargin < 2,
+    error('Not enough input arguments.')
+end
+%
+disp_jd(display_mode,' ')
+%
+if ~isstruct(struct1),
+    disp_jd(display_mode,'Warning: The first argument is not a structure and is defined as a field f1.');
+    disp_jd(display_mode,' ')
+    struct1.f1 = struct1;
+end
+%
+if ~isstruct(struct1),
+    disp_jd(display_mode,'Warning: The first argument is not a structure and is defined as a field f2.');
+    disp_jd(display_mode,' ')
+    struct1.f2 = struct1;
+end
+%
+if isempty(str1)
+    disp_jd(display_mode,' **** Comparison of the two structures ****')
+elseif isempty(str2)
+    disp_jd(display_mode,[' **** Comparison of the two structures ',str1,' ****'])
+else
+    disp_jd(display_mode,[' **** Comparison of the two structures ',str1,' and ',str2,' ****'])
+end
+%
+disp_jd(display_mode,' ')
 %
 f1 = fieldnames(struct1);
 f2 = fieldnames(struct2);
 %
-nf = length(f1);
+nf1 = length(f1);
+nf2 = length(f2);
 %
-if length(f2) ~= nf,
-     disp('The two structures have a different number of fields');
+if nf2 ~= nf1,
+    disp_jd(display_mode,'Warning: The two structures have a different number of fields');
+    disp_jd(display_mode,' ')
 end
 %
-f0 = zeros(1,nf);
+str{1} = 'identical';
+str{2} = 'different value';
+str{3} = 'different type/size';
+str{4} = 'could not be compared';
+str{5} = 'present only in structure 1';
+str{6} = 'present only in structure 2';
 %
-for is = 1:nf,
+totcomp = 1;
+%
+for is = 1:nf1,
+    %
+    rescomp = 0;
+    %
     fname = f1{is};
     eval(['v1 = struct1.',fname,';']);
     %
     if ~isfield(struct2,fname),
-        f0(is) = 4;
-        continue
-    end
-    %
-    eval(['v2 = struct2.',fname,';']);
-    if ischar(v1),
-        if ischar(v2),
-            if ~strcmp(v1,v2),
-                f0(is) = 1;
-            end
-        else
-            f0(is) = 2;
-        end
-    elseif isnumeric(v1), 
-        if isnumeric(v2),
-            if size(v2) == size(v1),
-                if max(abs(v1(:) - v2(:))) ~= 0,
-                    f0(is) = 1;
+        rescomp = 4;
+    else
+        %
+        eval(['v2 = struct2.',fname,';']);
+        %
+        if ischar(v1),
+            %
+            if ischar(v2),
+                if ~strcmp(v1,v2),
+                    rescomp = 1;
                 end
             else
-                f0(is) = 2;
+                rescomp = 2;
             end
-        else
-            f0(is) = 2;
+            %
+        elseif isnumeric(v1), 
+            %
+            if isnumeric(v2),
+                if size(v2) == size(v1),
+                    %
+                    mask_NaN_v1 = isnan(v1);
+                    mask_NaN_v2 = isnan(v2);
+                    %
+                    mask_inf_v1 = isinf(v1);
+                    mask_inf_v2 = isinf(v2);
+                    %
+                    mask_num_v1 = ~mask_NaN_v1 & ~mask_inf_v1;
+                    mask_num_v2 = ~mask_NaN_v2 & ~mask_inf_v2;
+                    %
+                    if (mask_NaN_v1 ~= mask_NaN_v2) | (mask_inf_v1 ~= mask_inf_v2) | any(v1(mask_num_v1) ~= v2(mask_num_v2)),
+                        rescomp = 1;
+                    end
+                else
+                    rescomp = 2;
+                end
+            else
+                rescomp = 2;
+            end
+            %
+        elseif isstruct(v1),
+            %
+            if isstruct(v2) 
+                if ~comp_struct_jd(v1,v2,1,fname)
+                    rescomp = 1;
+                end
+            else
+                rescomp = 2;
+            end
+            %
+        elseif iscell(v1), 
+            %
+            if iscell(v2),
+                if size(v2) == size(v1),
+                    for ic = 1:numel(v1),
+                        if ~comp_struct_jd(v1{ic},v2{ic},0),
+                            rescomp = 1;
+                            break
+                        end
+                    end
+                else
+                    rescomp = 2;
+                end
+            else
+                rescomp = 2;
+            end
+            %
+        else 
+            rescomp = 3;
         end
-    else 
-        f0(is) = 3;
     end
-end
-%
-str0 = [];
-str1 = [];
-str2 = [];
-str3 = [];
-str4 = [];
-str5 = [];
-%
-for is = 1:nf,
-    if f0(is) == 0,
-        str0 = [str0,f1{is},', '];
-    elseif f0(is) == 1,
-        str1 = [str1,f1{is},', '];
-    elseif f0(is) == 2,
-        str2 = [str2,f1{is},', '];
-    elseif f0(is) == 3,
-        str3 = [str3,f1{is},', '];
-    elseif f0(is) == 4,
-        str4 = [str4,f1{is},', '];
+    %
+    if rescomp > 0,
+        totcomp = 0;
     end
+    %
+    disp_jd(display_mode,['- ',fname,' : ',str{rescomp+1}]);
+    %
 end
 %
 for is = 1:length(f2),
     fname = f2{is};
+    rescomp = 5;
     %
     if ~isfield(struct1,fname),
-        str5 = [str5,', ',f2{is}];
+        totcomp = 0;
+        disp_jd(display_mode,['- ',fname,' : ',str{rescomp+1}]);
     end
 end
 %
-if ~isempty(str0),
-    if isempty(str1) & isempty(str2) & isempty(str2),
-        disp(['The two structures are identical']);
+disp_jd(display_mode,' ')
+%
+if nargout == 0,
+    if totcomp == 1,
+        disp_jd(display_mode,'**** The two structures are identical ****')
     else
-        disp(['The fields : ',str0,'are identical']);
+        disp_jd(display_mode,'**** The two structures are different ****')
     end
-end
+    %
+    disp_jd(display_mode,' ')
+end    
 %
-if ~isempty(str1),
-    disp(['The fields : ',str1,'are different']);
-end
+function disp_jd(display_mode,str)
 %
-if ~isempty(str2), 
-    disp(['The fields : ',str2,'are of different type']);
-end
-%
-if ~isempty(str3),
-    disp(['The fields : ',str3,'were not compared']);
-end
-%
-if ~isempty(str4),
-    disp(['The fields : ',str4,'are only present in structure 1']);
-end
-%
-if ~isempty(str5),
-    disp(['The fields : ',str5,'are only present in structure 2']);
+if display_mode >= 1,
+    disp(str);
 end
     
 
