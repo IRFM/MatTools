@@ -21,10 +21,10 @@ if nargin == 0,
 	return;
 elseif nargin == 1,
     default = NaN;
-    values = NaN;
+    values = {};
     message = '';
 elseif nargin == 2,
-    values = NaN;
+    values = {};
     message = '';
 elseif nargin == 3,
     message = '';
@@ -45,17 +45,21 @@ while isempty(vallu),
  	end
  	if ~isempty(rep),
         flag = 0;
-        for ii = 1:length(values),
-            if chartype == 0,
-                if values{ii} == rep,flag = 1;break;end
-            else
-                if strcmp(rep,values{ii});flag = 1;break;end
+        if nargin > 2,%test the input value
+            for ii = 1:length(values),
+                if chartype == 0,
+                    if values{ii} == rep,flag = 1;break;end
+                else
+                    if strcmp(rep,values{ii});flag = 1;break;end
+                end
             end
-        end
-  		if flag == 1,
-            vallu = rep;
+            if flag == 1,
+                vallu = rep;
+            else
+                disp(['Warning: ',message]);
+            end
         else
-            disp(['Warning: ',message]);
+            vallu = rep;
         end
  	else
   		vallu = default;
