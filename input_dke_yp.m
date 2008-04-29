@@ -41,6 +41,13 @@ elseif isnumeric(default),
     %
     type = 0;
     sd = size(default);
+    if length(sd) == 2 && sd(1) == 1, % horizontal 1D-vector or scalar
+        vec = 1;
+    elseif length(sd) == 2 && sd(2) == 1, % vertical 1D-vector
+        vec = 2;
+    else
+        vec = 0;
+    end
     default = default(:).';
     defstr = num2str(default);
     %
@@ -87,11 +94,15 @@ while flag <= 0,
             warnstr = 'The returned value must be numeric';
             continue
         elseif ~isempty(default),
-            if numel(val_out) ~= length(default),
-                warnstr = ['The returned array must contains ',num2str(length(default)),' elements.'];
-                continue
-            else
-                val_out = reshape(val_out,sd);
+            if vec == 0 
+                if numel(val_out) ~= length(default),
+                    warnstr = ['The returned array must contains ',num2str(length(default)),' elements.'];
+                    continue
+                else
+                    val_out = reshape(val_out,sd);
+                end
+            elseif vec == 2,
+                val_out = val_out.';
             end
         end
     end
