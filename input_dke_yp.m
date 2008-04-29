@@ -142,7 +142,7 @@ while flag <= 0,
             %
             for ii = 1:length(values),
                 if type == 0,
-                    if size(val_out) == size(values{ii}) && all(val_out == values{ii}),
+                    if all(size(val_out) == size(values{ii})) && all(val_out == values{ii}),
                         flag = 1;
                     end
                 elseif strcmp(val_out,values{ii}),
