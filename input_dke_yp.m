@@ -32,7 +32,17 @@ if nargin < 1,
     string = '';
 end
 %
-if ischar(default),
+if islogical(default),
+    %
+    type = -1;
+	%
+	if default,
+		defstr = 'true';
+	else
+		defstr = 'false';
+	end
+	%
+elseif ischar(default),
     %
     type = 1;
     defstr = default;
@@ -53,7 +63,7 @@ elseif isnumeric(default),
     %
 else
     %
-    error('The default value must be a string or a numeric array')
+    error('The default value must be a logical, string or a numeric array')
     %
 end
 % 
@@ -76,7 +86,7 @@ while flag <= 0,
         flag = 0;
     end
     %
- 	if type == 0,
+ 	if type <= 0,
   		val_out = input([string ' ? [',defstr,'] : ']);
  	else
   		val_out = input([string ' ? [',defstr,'] : '],'s');
@@ -89,6 +99,21 @@ while flag <= 0,
         mod = 1;
     end
     %
+	if type == -1;
+		%
+		if isnumeric(val_out),
+			val_out = logical(val_out);
+		elseif ischar(val_out),
+			if strcmp(val_out,'true'),
+				val_out = true;
+			elseif strcmp(val_out,'false'),
+				val_out = false;
+			else
+				continue
+			end
+		end
+	end
+	%
     if type == 0 
         if ~isnumeric(val_out),
             warnstr = 'The returned value must be numeric';
