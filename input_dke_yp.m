@@ -1,4 +1,4 @@
-function [val_out,mod] = input_dke_yp(string,default,values,message)
+function [val_out,mod] = input_dke_yp(string,default,values,message,forcesize)
 %
 %	Customized input function with default and allowed values
 %
@@ -7,11 +7,13 @@ function [val_out,mod] = input_dke_yp(string,default,values,message)
 %		- string  : description of the parameter (string)
 %		- default : default value of the parameter (string, scalar, or array)
 %       - values  : set of possibles values (array or cells)
-%               USE :   - cell array  : list of possible string or array values
+%               USE :   
+%                   - cell array  : list of possible string or array values
 %                   - row array   : list of possible scalar values
 %                   - [vmin;vmax] : bounds for scalar or array value(s)        
 %                   
 %       - message : universal warning message (string)
+%       - forcesize : force the output size to respect this dimension (array)
 %
 %	Output:
 %
@@ -22,6 +24,9 @@ function [val_out,mod] = input_dke_yp(string,default,values,message)
 % by Y.PEYSSON CEA/DSM/IRFM <yves.peysson@cea.fr> 
 % and J.DECKER CEA/DSM/IRFM <joan.decker@cea.fr>
 %
+if nargin < 5
+    forcesize = [];
+end
 if nargin < 4
     message = '';
 end
@@ -68,23 +73,31 @@ else
 end
 % 
 val_out = [];
-warnstr = '';
 %
 flag = -1;
 mod = 0;
 %
 while flag <= 0,
     %
-    if flag == 0,
+    if flag == -2,
+        %
+        disp(' ');
+        disp(['====> Warning: The output must have the dimension [',num2str(forcesize),']. ']);
+        disp(' ');
+        %
+    elseif flag == 0,
+        %
         if ~isempty(message),
             warnstr = message;
         end
         %
+        disp(' ');
         disp(['====> Warning: ',warnstr]);
         disp(' ');
-    else
-        flag = 0;
+        %
     end
+    %
+    flag = 0;
     %
  	if type <= 0,
   		val_out = input([string ' ? [',defstr,'] : ']);
@@ -179,4 +192,11 @@ while flag <= 0,
     else
         flag = 1;
     end
+    %
+    if ~isempty(forcesize),
+        if any(size(val_out) ~= forcesize),
+            flag = -2;
+        end
+    end
+    %
 end
