@@ -87,9 +87,9 @@ while flag <= 0,
         %
     elseif flag == 0,
         %
-        if ~isempty(message),
+        %if ~isempty(message),
             warnstr = message;
-        end
+        %end
         %
         disp(' ');
         disp(['====> Warning: ',warnstr]);
@@ -153,14 +153,12 @@ while flag <= 0,
             end
             %
             if size(values,1) == 1,% list of valued allowed
-                if length(val_out) > 1,
-                    warnstr = 'The returned value must be a scalar.';
-                    continue
-                end
-                if ~any(val_out == values),
-                    warnstr = 'The returned value is not allowed.';
-                    continue
-                end
+				for ival = 1:numel(val_out),
+					if ~any(val_out(ival) == values),
+						warnstr = 'The returned value is not allowed.';
+						continue
+					end
+				end
             elseif size(values) == [2,1],% bounds for returned values
                 if ~isinf(values(1)) && any(val_out < values(1)),
                     warnstr = ['The returned value must be larger than ',num2str(values(1)),'.'];
