@@ -94,12 +94,28 @@ for is = 1:nf1,
                     mask_num_v1 = ~mask_NaN_v1 & ~mask_inf_v1;
                     mask_num_v2 = ~mask_NaN_v2 & ~mask_inf_v2;
                     %
-                    if (mask_NaN_v1 ~= mask_NaN_v2) | (mask_inf_v1 ~= mask_inf_v2) | any(v1(mask_num_v1) ~= v2(mask_num_v2)),
+                    if any(mask_NaN_v1(:) ~= mask_NaN_v2(:)) | any(mask_inf_v1(:) ~= mask_inf_v2(:)) | any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
                         rescomp = 1;
                     end
                 else
                     rescomp = 2;
                 end
+            else
+                rescomp = 2;
+            end
+            %
+        elseif islogical(v1),
+            %
+            if islogical(v2),
+                if size(v2) == size(v1),
+                    %
+                    if any(v1 ~= v2),
+                        rescomp = 1;
+                    end
+                else
+                    rescomp = 2;
+                end
+               
             else
                 rescomp = 2;
             end
@@ -119,9 +135,13 @@ for is = 1:nf1,
             if iscell(v2),
                 if size(v2) == size(v1),
                     for ic = 1:numel(v1),
-                        if ~comp_struct_jd(v1{ic},v2{ic},0),
-                            rescomp = 1;
-                            break
+                        if isstruct(v1{ic}) && isstruct(v2{ic})
+                            if ~comp_struct_jd(v1{ic},v2{ic},0),
+                                rescomp = 1;
+                                break
+                            end
+                        else
+                            rescomp = 3;
                         end
                     end
                 else
