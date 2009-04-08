@@ -1,10 +1,13 @@
-function totcomp = comp_struct_jd(struct1,struct2,display_mode,str1,str2)
+function totcomp = comp_struct_jd(struct1,struct2,display_mode,ignoredfieds,str1,str2)
 %
-if nargin < 5,
+if nargin < 6,
     str2 = '';
 end
-if nargin < 4,
+if nargin < 5,
     str1 = '';
+end
+if nargin < 4,
+    ignoredfieds = {};
 end
 if nargin < 3,
     display_mode = 1;
@@ -16,15 +19,19 @@ end
 disp_jd(display_mode,' ')
 %
 if ~isstruct(struct1),
+    f1 = struct1;
+    clear struct1
     disp_jd(display_mode,'Warning: The first argument is not a structure and is defined as a field f1.');
     disp_jd(display_mode,' ')
-    struct1.f1 = struct1;
+    struct1.f1 = f1;
 end
 %
-if ~isstruct(struct1),
-    disp_jd(display_mode,'Warning: The first argument is not a structure and is defined as a field f2.');
+if ~isstruct(struct2),
+    f1 = struct2;
+    clear struct2
+    disp_jd(display_mode,'Warning: The second argument is not a structure and is defined as a field f1.');
     disp_jd(display_mode,' ')
-    struct1.f2 = struct1;
+    struct2.f1 = f1;
 end
 %
 if isempty(str1)
@@ -39,6 +46,30 @@ disp_jd(display_mode,' ')
 %
 f1 = fieldnames(struct1);
 f2 = fieldnames(struct2);
+%
+is_list = [];
+%
+for is = 1:length(f1),
+    for ii = 1:length(ignoredfieds),
+        if strcmp(f1{is},ignoredfieds{ii}),
+            is_list = [is_list,is];
+        end
+    end
+end
+%
+f1(is_list) = [];
+%
+is_list = [];
+%
+for is = 1:length(f2),
+    for ii = 1:length(ignoredfieds),
+        if strcmp(f2{is},ignoredfieds{ii}),
+             is_list = [is_list,is];
+        end
+    end
+end
+%
+f2(is_list) = [];
 %
 nf1 = length(f1);
 nf2 = length(f2);
@@ -60,6 +91,7 @@ totcomp = 1;
 for is = 1:nf1,
     %
     rescomp = 0;
+    info = '';
     %
     fname = f1{is};
     eval(['v1 = struct1.',fname,';']);
@@ -94,7 +126,11 @@ for is = 1:nf1,
                     mask_num_v1 = ~mask_NaN_v1 & ~mask_inf_v1;
                     mask_num_v2 = ~mask_NaN_v2 & ~mask_inf_v2;
                     %
-                    if any(mask_NaN_v1(:) ~= mask_NaN_v2(:)) | any(mask_inf_v1(:) ~= mask_inf_v2(:)) | any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
+                    if any(mask_NaN_v1(:) ~= mask_NaN_v2(:)) | any(mask_inf_v1(:) ~= mask_inf_v2(:))
+                        rescomp = 1;
+					elseif any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
+                        reldiff = max(abs(v2(mask1) - v1(mask2))./(abs(v1(mask1)) + realmin));
+                        info = [' ; maximum relative difference is : ',num2str(reldiff)];
                         rescomp = 1;
                     end
                 else
@@ -123,7 +159,7 @@ for is = 1:nf1,
         elseif isstruct(v1),
             %
             if isstruct(v2) 
-                if ~comp_struct_jd(v1,v2,1,fname)
+                if ~comp_struct_jd(v1,v2,0,ignoredfieds),
                     rescomp = 1;
                 end
             else
@@ -135,13 +171,9 @@ for is = 1:nf1,
             if iscell(v2),
                 if size(v2) == size(v1),
                     for ic = 1:numel(v1),
-                        if isstruct(v1{ic}) && isstruct(v2{ic})
-                            if ~comp_struct_jd(v1{ic},v2{ic},0),
-                                rescomp = 1;
-                                break
-                            end
-                        else
-                            rescomp = 3;
+                        if ~comp_struct_jd(v1{ic},v2{ic},0,ignoredfieds),
+                            rescomp = 1;
+                            break
                         end
                     end
                 else
@@ -160,7 +192,7 @@ for is = 1:nf1,
         totcomp = 0;
     end
     %
-    disp_jd(display_mode,['- ',fname,' : ',str{rescomp+1}]);
+    disp_jd(display_mode,['- ',fname,' : ',str{rescomp+1},info]);
     %
 end
 %
