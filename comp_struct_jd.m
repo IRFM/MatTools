@@ -129,7 +129,7 @@ for is = 1:nf1,
                     if any(mask_NaN_v1(:) ~= mask_NaN_v2(:)) | any(mask_inf_v1(:) ~= mask_inf_v2(:))
                         rescomp = 1;
 					elseif any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
-                        reldiff = max(abs(v2(mask1) - v1(mask2))./(abs(v1(mask1)) + realmin));
+                        reldiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:)))./(abs(v1(mask_num_v1(:))) + realmin));
                         info = [' ; maximum relative difference is : ',num2str(reldiff)];
                         rescomp = 1;
                     end
