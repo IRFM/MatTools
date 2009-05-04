@@ -130,7 +130,8 @@ for is = 1:nf1,
                         rescomp = 1;
 					elseif any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
                         reldiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:)))./(abs(v1(mask_num_v1(:))) + realmin));
-                        info = [' ; maximum relative difference is : ',num2str(reldiff)];
+                        absdiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:))));
+                        info = [' ; maximum relative difference is : ',num2str(reldiff),', maximum absolute difference is : ',num2str(absdiff)];
                         rescomp = 1;
                     end
                 else
