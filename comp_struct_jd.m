@@ -160,7 +160,7 @@ for is = 1:nf1,
         elseif isstruct(v1),
             %
             if isstruct(v2) 
-                if ~comp_struct_jd(v1,v2,0,ignoredfieds),
+                if ~comp_struct_jd(v1,v2,imag(display_mode),ignoredfieds),
                     rescomp = 1;
                 end
             else
@@ -221,7 +221,7 @@ end
 %
 function disp_jd(display_mode,str)
 %
-if display_mode >= 1,
+if real(display_mode) >= 1,
     disp(str);
 end
     
