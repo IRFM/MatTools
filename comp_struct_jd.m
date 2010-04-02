@@ -115,7 +115,7 @@ for is = 1:nf1,
         elseif isnumeric(v1), 
             %
             if isnumeric(v2),
-                if size(v2) == size(v1),
+                if length(size(v2)) == length(size(v1)) && all(size(v2) == size(v1)),
                     %
                     mask_NaN_v1 = isnan(v1);
                     mask_NaN_v2 = isnan(v2);
