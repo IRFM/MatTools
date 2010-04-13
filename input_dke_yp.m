@@ -155,7 +155,7 @@ while flag <= 0,
             if size(values,1) == 1,% list of valued allowed
                 warnstr = '';
 				for ival = 1:numel(val_out),
-					if ~any(val_out(ival) == values),
+					if ~(isnan(val_out(ival)) && any(isnan(values))) && ~any(val_out(ival) == values),
 						warnstr = 'The returned value is not allowed.';
 						continue
 					end
