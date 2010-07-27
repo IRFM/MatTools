@@ -74,6 +74,16 @@ f2(is_list) = [];
 nf1 = length(f1);
 nf2 = length(f2);
 %
+flength = 0;
+%
+for is = 1:nf1,
+    flength = max([flength,length(f1{is})]);
+end
+%
+for is = 1:nf2,
+    flength = max([flength,length(f2{is})]);
+end
+%
 if nf2 ~= nf1,
     disp_jd(display_mode,'Warning: The two structures have a different number of fields');
     disp_jd(display_mode,' ')
@@ -107,6 +117,7 @@ for is = 1:nf1,
             if ischar(v2),
                 if ~strcmp(v1,v2),
                     rescomp = 1;
+                    info = ['s1 : ',v1,' ; s2 : ',v2];
                 end
             else
                 rescomp = 2;
@@ -131,7 +142,11 @@ for is = 1:nf1,
 					elseif any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
                         reldiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:)))./(abs(v1(mask_num_v1(:))) + realmin));
                         absdiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:))));
-                        info = [' ; maximum relative difference is : ',num2str(reldiff),', maximum absolute difference is : ',num2str(absdiff)];
+                        if length(size(v1)) == 2 && all(size(v1) == [1,1]),
+                            info = ['s1 : ',num2str(v1),' ; s2 : ',num2str(v2)];
+                        else
+                            info = [' ; maximum relative difference is : ',num2str(reldiff),', maximum absolute difference is : ',num2str(absdiff)];
+                        end
                         rescomp = 1;
                     end
                 else
@@ -193,7 +208,7 @@ for is = 1:nf1,
         totcomp = 0;
     end
     %
-    disp_jd(display_mode,['- ',fname,' : ',str{rescomp+1},info]);
+    disp_jd(display_mode,['- ',fname,repmat(' ',[1,flength - length(fname)]),' : ',str{rescomp+1},info]);
     %
 end
 %
