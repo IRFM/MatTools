@@ -1,8 +1,12 @@
-function save_id = timeid_jd(time_id)
+function save_id = timeid_jd(time_id,digits)
 %
 % creates a string containing the date and time information in order to
 % identify a process. Can also do the inverted process
 %
+%
+if nargin < 2,
+    digits = 0;
+end
 %
 if isnumeric(time_id),
     year = num2str(time_id(1) - 2000);
@@ -10,7 +14,7 @@ if isnumeric(time_id),
     day = num2str(time_id(3));
     hour = num2str(time_id(4));
     minute = num2str(time_id(5));
-    second = num2str(round(time_id(6)));
+    second = num2str(fix(time_id(6)*10^digits));
     %
     if length(year) == 1,
         year = ['0',year];
