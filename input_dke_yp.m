@@ -109,6 +109,10 @@ while flag <= 0,
         val_out = default;
         mod = 0;
     else
+        if ischar(val_out) && strcmp(val_out,''''''),
+           val_out = '';
+        end
+        %
         mod = 1;
     end
     %
