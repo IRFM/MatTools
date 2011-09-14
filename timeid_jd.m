@@ -37,7 +37,7 @@ if isnumeric(time_id),
     %
     save_id = [year,month,day,hour,minute,second];
     %
-elseif ischar(time_id) && any(length(time_id) == [12,15,18]),
+elseif ischar(time_id) && any(length(time_id) >= 12),
     %
     save_id = [time_id(3:4),'/',time_id(5:6),'/20',time_id(1:2),'  ',time_id(7:8),':',time_id(9:10),':',time_id(11:12)];
     %
