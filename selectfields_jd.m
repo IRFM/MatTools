@@ -1,4 +1,4 @@
-function s = selectfields_jd(s,fields);
+function s = selectfields_jd(s,fields)
 %
 % This function removes from s the fields that are not included in the list
 % It uses rmfield so that no additional memory is used.
@@ -8,7 +8,7 @@ sfieldnames = fieldnames(s).';
 ns = length(sfieldnames);
 nf = length(fields);
 %
-sindex = logical(ones(1,ns));
+sindex = true(1,ns);
 %
 for il = 1:nf,
     sindex = sindex & ~strcmp(sfieldnames,fields{il});
