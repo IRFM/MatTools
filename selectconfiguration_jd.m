@@ -29,8 +29,13 @@ end
 isoftype = zeros(1,nconfs);
 %
 for iconf = 1:nconfs,
-    scheduler = findResource('scheduler','configuration',configs{iconf});
-    isoftype(iconf) = strcmpi(scheduler.Type,type);
+    try
+        scheduler = findResource('scheduler','configuration',configs{iconf});
+        isoftype(iconf) = strcmpi(scheduler.Type,type);
+    catch err
+        disp(['Impossible to find ressources for Imported configuration ',dkecluster.scheduler.configuration,...
+        ' because of the following error : ',err.message,'.']);
+    end
 end
 %
 isoftype = find(isoftype);%indices for imported configurations with scheduler.Type = type 
