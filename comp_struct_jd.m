@@ -35,7 +35,7 @@ if ~isstruct(struct2),
 end
 %
 if isempty(str1)
-    disp_jd(display_mode,' **** Comparison of the two structures ****')
+    disp_jd(display_mode,[' **** Comparison of the two structures ',inputname(1),' and ',inputname(2),' ****'])
 elseif isempty(str2)
     disp_jd(display_mode,[' **** Comparison of the two structures ',str1,' ****'])
 else
