@@ -9,8 +9,12 @@ end
 if nargin < 1,
 	type = 'local';
 end
-%    
-[~,configs] = defaultParallelConfig;% configurations present in user preferences file
+%
+if matlabstatus_yp <= 810,%used until matlab R2013a
+    [~,configs] = defaultParallelConfig;% configurations present in user preferences file (old syntax)
+else
+    configs = {parallel.defaultClusterProfile};% configurations present in user preferences file
+end
 %
 nconfs = length(configs);
 %
