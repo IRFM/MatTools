@@ -34,7 +34,7 @@ function select = iselect_jd(s,titletext,h,style,presel)
         style = struct;
     end
     %
-    if nargin < 3 || ~isscalar(h) || (islogical(h) && ~h) || (~islogical(h) && ~ishandle(h))
+    if nargin < 3 || ~isscalar(h) || (islogical(h) && ~h) || (~islogical(h) && (~ishandle(h) || h == 0))
         opt_gui = false;% command line
     else
         opt_gui = true;
@@ -72,7 +72,13 @@ function select = iselect_jd(s,titletext,h,style,presel)
             %
             [bs,is] = getstr(s,j);
             %
-            inputstr = [inputstr,'(',num2str(j),') ',bs,' [',is,']\n'];
+            if ~isempty(is),
+                isstr = '[',is,']';
+            else
+                isstr = '';
+            end
+            %
+            inputstr = [inputstr,'(',num2str(j),') ',bs,' ',isstr,'\n'];
             %
         end
         %
@@ -152,7 +158,7 @@ function select = iselect_jd(s,titletext,h,style,presel)
         %
         ok = uicontrol(p,'Style','pushbutton','String','OK','Position',[2*style.buthsep + style.textwidth,style.buthsep,style.butwidth,style.butheight],'FontName',style.fontname,'FontSize',style.fontsize,'Enable','on','Callback','uiresume');
         %
-        set(p,'SelectedObject',b(j));
+        set(p,'SelectedObject',b(presel));
         %
         uiwait;
         %
@@ -171,13 +177,13 @@ function [bs,is] = getstr(s,j)
     %
     if iscell(s) 
         if ischar(s{j}),
-            bs = s{j};
+            bs = [' ',s{j}];
             is = '';
         else
             error(['Warning : cell element # ',num2str(j),' ignored because not in string format.']);
         end
     else
-        bs = s(j).text;
+        bs = [' ',s(j).text];
         if isfield(s,'info'),
             is = s(j).info;
         else
