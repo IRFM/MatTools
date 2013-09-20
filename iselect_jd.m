@@ -1,6 +1,6 @@
-function select = iselect_jd(s,titletext,h,style,presel)
+function select = iselect_jd(s,titletext,h,style,presel,type)
     %
-    % This function creates a button group for exclusive selection
+    % This function creates a button group or popupmenu for exclusive selection
     %
     % INPUTS :
     %   
@@ -26,9 +26,15 @@ function select = iselect_jd(s,titletext,h,style,presel)
     %       
     %       - presel : pre-selected option (optional)
     %
+    %       - type : type of GUI (optional) ex : buttongroup, popupmenu
+    %
     % OUTPUT : 
     %
     %       - select : index of selected option
+    %
+    if nargin < 6 || ~ischar(type) || ~any(strcmp({'buttongroup','popupmenu'},type)),
+        type = 'buttongroup';
+    end
     %
     if nargin < 4,
         style = struct;
@@ -73,7 +79,7 @@ function select = iselect_jd(s,titletext,h,style,presel)
             [bs,is] = getstr(s,j);
             %
             if ~isempty(is),
-                isstr = '[',is,']';
+                isstr = ['[',is,']'];
             else
                 isstr = '';
             end
@@ -119,7 +125,11 @@ function select = iselect_jd(s,titletext,h,style,presel)
             end
             %
             width = style.textwidth + 3*style.buthsep + style.butwidth;
-            height = (nb+1)*style.textheight + 3*style.butvsep;
+            if strcmp(type,'buttongroup'),
+                height = (nb+1)*style.textheight + 3*style.butvsep;
+            elseif strcmp(type,'popupmenu'),
+                height = style.textheight + 2*style.butvsep;
+            end
             %
             style.position = [0,0,width,height];
             %
@@ -129,7 +139,11 @@ function select = iselect_jd(s,titletext,h,style,presel)
         height = style.position(4);
         %
         style.textwidth = width - style.butwidth - 3*style.buthsep;
-        style.textheight = fix(height - 3*style.butvsep)/(nb+1);
+        if strcmp(type,'buttongroup'),
+            style.textheight = fix(height - 3*style.butvsep)/(nb+1);
+        elseif strcmp(type,'popupmenu'),
+            style.textheight = height - 2*style.butvsep;
+        end   
         %
         if newh,
             h = figure('name','select','visible','on','menubar','none','numbertitle','off','resize','on','toolbar','none','units','pixels','position',style.position);
@@ -142,27 +156,49 @@ function select = iselect_jd(s,titletext,h,style,presel)
         %
         style.position = [fix((hpos(3)-width)/2),fix((hpos(4)-height)/2),width,height];
         %
-        p = uibuttongroup('Parent',h,'units','pixels','position',style.position);
+        if strcmp(type,'buttongroup'),
+            p = uibuttongroup('Parent',h,'units','pixels','position',style.position);
+            %        
+            b = NaN(1,nb);
+        else
+            p = uipanel('Parent',h,'Title','','units','pixels','Position',style.position);
+            %
+            str = cell(1,nb);
+        end
         %
         title = uicontrol(p,'Style','text','String',titletext,'Position',[style.buthsep,height - style.buthsep - style.textheight,style.textwidth,style.textheight],'FontName',style.fontname,'FontUnits','pixels','FontSize',style.fontsize,'HorizontalAlignment','left');
-        %
-        b = NaN(1,nb);
         %
         for j = 1:nb,
             %
             [bs,is] = getstr(s,j);
             %
-            b(j) = uicontrol('Parent',p,'Style','radiobutton','String',bs,'tooltipstring',is,'Position',[style.buthsep,height - 2*style.buthsep - (j+1)*style.textheight,style.textwidth,style.textheight],'FontName',style.fontname,'FontUnits','pixels','FontSize',style.fontsize);
+            if strcmp(type,'buttongroup'),
+                b(j) = uicontrol('Parent',p,'Style','radiobutton','String',bs,'tooltipstring',is,'Position',[style.buthsep,height - 2*style.buthsep - (j+1)*style.textheight,style.textwidth,style.textheight],'FontName',style.fontname,'FontUnits','pixels','FontSize',style.fontsize);
+            else
+                str{j} = bs;
+            end
             %
         end
         %
-        ok = uicontrol(p,'Style','pushbutton','String','OK','Position',[2*style.buthsep + style.textwidth,style.buthsep,style.butwidth,style.butheight],'FontName',style.fontname,'FontSize',style.fontsize,'Enable','on','Callback','uiresume');
-        %
-        set(p,'SelectedObject',b(presel));
-        %
-        uiwait;
-        %
-        select = find(b == get(p,'SelectedObject'));
+        if strcmp(type,'buttongroup'),
+            %
+            ok = uicontrol(p,'Style','pushbutton','String','OK','Position',[2*style.buthsep + style.textwidth,style.buthsep,style.butwidth,style.butheight],'FontName',style.fontname,'FontSize',style.fontsize,'Enable','on','Callback','uiresume');
+            %
+            set(p,'SelectedObject',b(presel));
+            %
+            uiwait;
+            %
+            select = find(b == get(p,'SelectedObject'));
+            %
+        else
+            %
+            b = uicontrol(p,'Style','popupmenu','String',str,'Value',presel,'Position',[2*style.buthsep + style.textwidth,style.buthsep,style.butwidth,style.butheight],'FontName',style.fontname,'FontUnits','pixels','FontSize',style.fontsize,'Callback','uiresume');
+            %
+            uiwait;
+            %
+            select = get(b,'Value');
+            %
+        end
         %
         if newh,
             delete(h);
