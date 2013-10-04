@@ -3,6 +3,10 @@ function s = rmfields_jd(s,fields,rec)
 % This function removes from s the fields that areincluded in the list
 % It can be done recursively if rec is true
 %
+if nargin < 3,
+    rec = false;
+end
+%
 sfieldnames = fieldnames(s);
 %
 if ischar(fields),
