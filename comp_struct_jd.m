@@ -1,10 +1,13 @@
-function totcomp = comp_struct_jd(struct1,struct2,display_mode,ignoredfieds,str1,str2)
+function totcomp = comp_struct_jd(struct1,struct2,display_mode,ignoredfieds,selectfields,str1,str2)
 %
-if nargin < 6,
+if nargin < 7,
     str2 = '';
 end
-if nargin < 5,
+if nargin < 6,
     str1 = '';
+end
+if nargin < 5,
+    selectfields = {};
 end
 if nargin < 4,
     ignoredfieds = {};
@@ -44,32 +47,35 @@ end
 %
 disp_jd(display_mode,' ')
 %
+struct1 = selectfields_jd(rmfields_jd(struct1,ignoredfieds),selectfields);
+struct2 = selectfields_jd(rmfields_jd(struct2,ignoredfieds),selectfields);
+%
 f1 = fieldnames(struct1);
 f2 = fieldnames(struct2);
 %
-is_list = [];
+% is_list = [];
 %
-for is = 1:length(f1),
-    for ii = 1:length(ignoredfieds),
-        if strcmp(f1{is},ignoredfieds{ii}),
-            is_list = [is_list,is];
-        end
-    end
-end
-%
-f1(is_list) = [];
-%
-is_list = [];
-%
-for is = 1:length(f2),
-    for ii = 1:length(ignoredfieds),
-        if strcmp(f2{is},ignoredfieds{ii}),
-             is_list = [is_list,is];
-        end
-    end
-end
-%
-f2(is_list) = [];
+% for is = 1:length(f1),
+%     for ii = 1:length(ignoredfieds),
+%         if strcmp(f1{is},ignoredfieds{ii}),
+%             is_list = [is_list,is];
+%         end
+%     end
+% end
+% %
+% f1(is_list) = [];
+% %
+% is_list = [];
+% %
+% for is = 1:length(f2),
+%     for ii = 1:length(ignoredfieds),
+%         if strcmp(f2{is},ignoredfieds{ii}),
+%              is_list = [is_list,is];
+%         end
+%     end
+% end
+% %
+% f2(is_list) = [];
 %
 nf1 = length(f1);
 nf2 = length(f2);
@@ -175,7 +181,7 @@ for is = 1:nf1,
         elseif isstruct(v1),
             %
             if isstruct(v2) 
-                if ~comp_struct_jd(v1,v2,imag(display_mode),ignoredfieds),
+                if ~comp_struct_jd(v1,v2,imag(display_mode),ignoredfieds,selectfields),
                     rescomp = 1;
                 end
             else
@@ -187,7 +193,7 @@ for is = 1:nf1,
             if iscell(v2),
                 if size(v2) == size(v1),
                     for ic = 1:numel(v1),
-                        if ~comp_struct_jd(v1{ic},v2{ic},0,ignoredfieds),
+                        if ~comp_struct_jd(v1{ic},v2{ic},0,ignoredfieds,selectfields),
                             rescomp = 1;
                             break
                         end
