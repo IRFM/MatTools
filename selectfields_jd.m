@@ -7,6 +7,10 @@ if nargin < 3,
     mode = true;
 end
 %
+if ~iscell(fields),
+    return
+end
+%
 sfieldnames = fieldnames(s).';
 %
 ns = length(sfieldnames);
