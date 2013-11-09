@@ -7,7 +7,7 @@ if nargin < 6,
     str1 = '';
 end
 if nargin < 5,
-    selectfields = {};
+    selectfields = NaN;
 end
 if nargin < 4,
     ignoredfieds = {};
