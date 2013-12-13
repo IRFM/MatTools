@@ -35,8 +35,16 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
     %
     %       - select : index of selected option for buttongroup & popupmenu, string or numerical array for edit 
     %
+    if nargin < 1,
+        error('Not enough arguments');
+    end
+    %
     if nargin < 6 || ~ischar(type) || ~any(strcmp({'buttongroup','popupmenu','edit'},type)),
-        type = 'buttongroup';
+        if isempty(s),
+            type = 'edit';
+        else
+            type = 'buttongroup';
+        end
     end
     %
     if nargin < 4,
@@ -61,10 +69,6 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
         else
             titletext = 'Please select one of the following :';
         end
-    end
-    %
-    if nargin < 1,
-        error('Not enough arguments');
     end
     %
     if ~strcmp(type,'edit') && ~iscell(s) && (~isstruct(s) || (isstruct(s) && ~isfield(s,'text'))),
