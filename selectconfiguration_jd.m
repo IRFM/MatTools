@@ -56,7 +56,7 @@ end
 %
 disp(['No configuration with name or type ',type,' found among imported configurations'])
 %
-% Test if type is an existing configuration among configurations listed in dkepath
+% Test if type is an existing configuration among input configurations
 % 
 configs = fieldnames(configurations);
 %
@@ -70,7 +70,7 @@ if ~isempty(iconfig),
     return
 end
 %
-% Test if type is an existing type among those configurations in dkepath
+% Test if type is an existing type among those input configurations 
 %
 isoftype = zeros(1,nconfs);
 %
