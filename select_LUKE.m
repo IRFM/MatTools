@@ -33,8 +33,9 @@ function select_LUKE_jd(lukeversions)
 % set no path in batch mode, except if environment variable LUKE exists 
 %
 PBS_jobid = getenv('PBS_JOBID');
+jobtimeid = getenv('jobtimeid');
 %
-if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS_jobid),
+if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS_jobid) && isempty(jobtimeid),
     %
     % test if directory exists
     %
@@ -88,4 +89,4 @@ if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS
     %
 end
 %
-clear lukeversions PBS_jobid
+clear lukeversions PBS_jobid jobtimeid
