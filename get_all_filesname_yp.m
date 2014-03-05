@@ -1,4 +1,4 @@
-function [varargout] = get_all_filesname_yp(dirName,extName)
+function [varargout] = get_all_filesname_yp(dirName,extName,dirLevel)
 %MatTools - List all the files and directories recursively in a directory (with the full path)
 %
 % List all the files and directories recursively in a directory (with the full path)
@@ -7,6 +7,7 @@ function [varargout] = get_all_filesname_yp(dirName,extName)
 %
 %   - dirName: directory path [string]
 %   - extName: file extension [string]
+%   - dirLevel: maximum directory level [1,1]
 %
 % OUTPUTS:
 %
@@ -27,8 +28,12 @@ function [varargout] = get_all_filesname_yp(dirName,extName)
 if nargin == 0,
 	dirName = pwd; 
     extName = [];
+    dirLevel = Inf;
 elseif nargin == 1,
     extName = [];
+    dirLevel = Inf;
+elseif nargin == 2,
+    dirLevel = Inf;
 end
 %
 if ~iscell(extName) && strcmpi(extName,'.*'),
@@ -71,7 +76,9 @@ else
     %
 end
 %
-while 1,
+level = 0;
+%
+while level <= dirLevel,
     index = find(indexDir);
     %
     if isempty(index),break;end
@@ -91,6 +98,8 @@ while 1,
         indexDir = [indexDir ones(1,nbdir)];
         %
     end
+    %
+    level = level + 1;
 end
 %
 if ~nargout,
