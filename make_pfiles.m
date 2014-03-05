@@ -254,8 +254,10 @@ end
 %
 if tarmode,%gzip folder for backup or transfer
     tar([targetDir,'.gz'],targetDir);
+    %
+    cd(dirinit);%clear protected folder
+    rmdir(targetDir,'s');
 end
 %
-cd(dirinit);%clear protected folder
-rmdir(targetDir,'s');
+
 
