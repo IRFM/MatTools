@@ -1,35 +1,197 @@
-function fileList = get_all_filesname_yp(dirName)
-%LUKE - List all the files in a directory and all sub-directories (with the full path)
+function [varargout] = get_all_filesname_yp(dirName,extName)
+%MatTools - List all the files and directories recursively in a directory (with the full path)
 %
-% List all the files in a directory and all sub-directories (with the full path)
+% List all the files and directories recursively in a directory (with the full path)
 %
 % INPUTS: 
 %
 %   - dirName: directory path [string]
+%   - extName: file extension [string]
 %
 % OUTPUTS:
 %
 %   - fileList: A list all the files (with the full path)
+%   - dirList: A list all the directories (with the full path)
+%
+% EXAMPLES
+%
+% [listFile,listDir] = get_all_filesname_yp('.')
+% [listFile,listDir] = get_all_filesname_yp('RootDirName')
+% [listFile,listDir] = get_all_filesname_yp('RootDirName','.*')
+% [listFile,listDir] = get_all_filesname_yp('RootDirName','.m')
+% [listFile,listDir] = get_all_filesname_yp('RootDirName',{'.m','.php'})
+% [listFile,listDir] = get_all_filesname_yp('RootDirName','m*')
 %
 % by Y.Peysson CEA-IRFM <yves.peysson@cea.fr> and Joan Decker CEA-IRFM (joan.decker@cea.fr)
 %
 if nargin == 0,
 	dirName = pwd; 
+    extName = [];
+elseif nargin == 1,
+    extName = [];
 end
 %
-dirData = dir(dirName);  
-dirIndex = [dirData.isdir];
-fileList = {dirData(~dirIndex).name}';
-%
-if ~isempty(fileList),
-    fileList = cellfun(@(x) fullfile(dirName,x),fileList,'UniformOutput',false);% Prepend path to files
+if ~iscell(extName) && strcmpi(extName,'.*'),
+   extName = [];
 end
 %
-subDirs = {dirData(dirIndex).name};
-validIndex = ~ismember(subDirs,{'.','..'});
+listFile = [];
+listDir{1,1} = dirName;
+indexDir(1) = 1;
 %
-for iDir = find(validIndex),
-    nextDir = fullfile(dirName,subDirs{iDir});
-    fileList = [fileList; get_all_filesname_yp(nextDir)];
+stc = '';
+%
+if isempty(extName),
+    %
+    flag = 1;
+    stc = '';
+    %
+elseif ~iscell(extName),
+    %
+    ii = strfind(extName,'*');
+    %
+    if length(ii) == 1 & ii == length(extName);
+        flag = 2;
+        stc = strrep(extName,'*','');
+    else
+        flag = 3;
+        stc = extName;
+    end
+    %
+elseif iscell(extName),
+    %
+    flag = 4;
+    stc = extName;
+    %
+else
+    %
+    extName = [];
+    flag = 1;
+    stc = extName;
+    %
 end
+%
+while 1,
+    index = find(indexDir);
+    %
+    if isempty(index),break;end
+    index = index(1);
+    %
+    [listdir,listfile] = getdir(listDir{index},flag,stc);
+    %
+    listFile = [listFile listfile];
+    %
+    indexDir(index) = 0;
+    %
+    nbdir = length(listdir);
+    %
+    if nbdir,
+        %
+        listDir = [listDir listdir];
+        indexDir = [indexDir ones(1,nbdir)];
+        %
+    end
+end
+%
+if ~nargout,
+    for i = 1:length(listFile),
+        fprintf('%s\n',listFile{i});
+    end
+else
+    varargout{1} = listFile;
+    varargout{2} = listDir;
+end
+%
+return
+%
+function [listdir,listfile] = getdir(folder,flag,ext)
+    %
+    S = dir(folder);
+    %
+    n = size(S,1);
+    %
+    listdir = cell(1,n);
+    listfile = cell(1,n);
+    %
+    nd = 0;
+    nf = 0;
+    %
+    for i = 1:n,
+        %
+        name = S(i).name;
+        %
+        if S(i).isdir,
+            if strcmp(name,'.') || strcmp(name,'..'),
+                continue;
+            end
+            %
+            if flag == 2 || flag == 3,
+                nd = nd + 1;
+                listdir{nd} = fullfile(folder,S(i).name);
+            else
+                listdir{i} = fullfile(folder,S(i).name);
+            end
+            %
+        else
+            if flag == 1,
+                %
+                listfile{i} = fullfile(folder,S(i).name);
+                %
+            elseif flag == 2,
+                %
+                ii = strfind(name,ext);
+                %
+                if isempty(ii) | ii ~= 1,continue;end
+                %
+                nf = nf+1;
+                listfile{nf} = fullfile(folder,S(i).name);
+                %
+            elseif flag == 3,
+                %
+                [dummy,dummy,exteFile] = fileparts(name);
+                %
+                if strcmpi(exteFile,ext),
+                    nf = nf+1;
+                    listfile{nf} = fullfile(folder,S(i).name);
+                end
+                %
+            elseif flag == 4,
+                %
+                [dummy,dummy,exteFile] = fileparts(name);
+                %
+                if isempty(exteFile),continue;end
+                %
+                if strmatch(lower(exteFile),ext,'exact'),
+                    listfile{i} = fullfile(folder,S(i).name);
+                end
+                %
+            end
+        end
+    end
+    %
+    if flag == 1 || flag == 4,
+        %
+        ind = find(cellfun('isempty',listdir));
+        listdir(ind) = [];
+        ind = find(cellfun('isempty',listfile));
+        listfile(ind) = [];
+        %
+    elseif flag == 2 || flag == 3,
+        %
+        listdir(nd+1:end) = [];
+        listfile(nf+1:end) = [];
+        %
+    end
+
+return
+
+
+
+
+
+
+
+
+
+
 
