@@ -27,7 +27,9 @@ function select_LUKE_jd(lukeversions)
 %   %                           
 %   clear lukeversions
 %   %
-
+if nargin < 1,
+    lukeversions = getappdata(0,'lukeversions');
+end
 %
 %
 % set no path in batch mode, except if environment variable LUKE exists 
@@ -57,8 +59,12 @@ if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS
         lukestr = [lukestr,'(',num2str(ivers),') ',lukeversions{ivers},'\n'];
     end
     %
-    lukestr = [lukestr,' [1] ? '];
-    lukever = input(lukestr);
+    if nvers > 0,
+        lukestr = [lukestr,' [1] ? '];
+        lukever = input(lukestr);
+    else
+        lukever = 0;
+    end        
     %
     if isempty(lukever) 
         lukever = 1;
@@ -77,16 +83,11 @@ if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS
         %
         disp([' Path set to ',luke_root])
         %
-        clear luke_root
-        %
     else
         %
         disp(' No path set to LUKE')
         %
     end  
     %
-    clear nvers lukestr ivers lukever
-    %
 end
 %
-clear lukeversions PBS_jobid jobtimeid
