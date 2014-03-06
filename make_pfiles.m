@@ -1,4 +1,4 @@
-function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir,tarmode,rejectedDir,rejectedFile,otherFile)
+function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir,tarmode,rejectedDir,rejectedFile,otherFile,mmode)
 %MatTools - Build protected files from M-files
 %
 % List all the files and directories recursively in a directory (with the full path)
@@ -17,6 +17,8 @@ function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir,tarmode,rejectedD
 %       default = '';
 %   - otherFile : List of other files to be transfered [cell]
 %       default = '';
+%   - mmode : the output folder which contains m-files (1) or p-files (0) [1,1]
+%       default = 0;
 %
 % OUTPUTS:
 %
@@ -28,163 +30,174 @@ function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir,tarmode,rejectedD
 %  make_pfiles('MatRemote','',1,{'private','php'},'',{'.sh','.plist'})
 %  make_pfiles('MatRemote','',1,'','cleanbridge',{'.sh','.plist'})
 %  make_pfiles('MatRemote','',1,'',{'remote_ASIPP_SHENMA','bridgeurl','bridge.php'},{'.sh','.plist','.php'})
+%  make_pfiles('MatRemote','',0,'',{'remote_ASIPP_SHENMA','bridgeurl','bridge.php'},{'.sh','.plist','.php'},1)
 %
 if nargin == 0,
+        %
+        rootDir = pwd;
+        targetDir = rootDir;
+        tarmode = 0;
+        rejectedDir = '';
+        rejectedFile = '';
+        otherFile = '';
+        mmode = 0;
+        %
+    elseif nargin == 1,
+        %
+        targetDir = rootDir;
+        tarmode = 0;
+        rejectedDir = '';
+        rejectedFile = '';
+        otherFile = '';
+        mmode = 0;
+        %
+    elseif nargin == 2,
+        %
+        tarmode = 0;
+        rejectedDir = '';
+        rejectedFile = '';
+        otherFile = '';
+        mmode = 0;
+        %
+    elseif nargin == 3,
+        %
+        rejectedDir = '';
+        rejectedFile = '';
+        otherFile = '';
+        mmode = 0;
+        %
+    elseif nargin == 4,
+        %
+        rejectedFile = '';
+        otherFile = '';
+        mmode = 0;
+        %
+    elseif nargin == 5,
+        %
+        otherFile = '';
+        mmode = 0;
+        %
+    elseif nargin == 6,
+        %
+        mmode = 0;
+        %
+    end
     %
-    rootDir = pwd;
-    targetDir = rootDir;
-    tarmode = 0;
-    rejectedDir = '';
-    rejectedFile = '';
-    otherFile = '';
+    if ~isempty(rejectedDir) && ~iscell(rejectedDir),
+        rejectedDir = {rejectedDir};
+    end
     %
-elseif nargin == 1,
+    if ~isempty(rejectedFile) && ~iscell(rejectedFile),
+        rejectedFile = {rejectedFile};
+    end
     %
-    targetDir = rootDir;
-    tarmode = 0;
-    rejectedDir = '';
-    rejectedFile = '';
-    otherFile = '';
+    if ~isempty(otherFile) && ~iscell(otherFile),
+        otherFile = {otherFile};
+    end
     %
-elseif nargin == 2,
-    tarmode = 0;
-    rejectedDir = '';
-    rejectedFile = '';
-    otherFile = '';
+    dirinit = pwd;
     %
-elseif nargin == 3,
-    rejectedDir = '';
-    rejectedFile = '';
-    otherFile = '';
+    [dummy,listDir] = get_all_filesname_yp(rootDir,'.m');
     %
-elseif nargin == 4,
-    rejectedFile = '';
-    otherFile = '';
+    if strcmp(targetDir,'.') || strcmp(targetDir,'..'),
+        error(['Error: The name of the target directory must be explicitly given (no ''.'' or ''..'').'])
+    elseif isempty(targetDir),
+         targetDir = [rootDir,'_protected'];
+         disp(['Warning: The target directory is named ''',rootDir,'''_protected.'])
+    elseif strcmp(rootDir,targetDir),
+         targetDir = [rootDir,'_protected'];
+         disp(['Warning: The target directory is named ''',rootDir,'''_protected.'])
+    end
+    %   
+    iselectDir = 1;
     %
-elseif nargin == 5,
-    otherFile = '';
-    %
-end
-%
-if ~isempty(rejectedDir) && ~iscell(rejectedDir),
-    rejectedDir = {rejectedDir};
-end
-%
-if ~isempty(rejectedFile) && ~iscell(rejectedFile),
-    rejectedFile = {rejectedFile};
-end
-%
-if ~isempty(otherFile) && ~iscell(otherFile),
-    otherFile = {otherFile};
-end
-%
-dirinit = pwd;
-%
-[dummy,listDir] = get_all_filesname_yp(rootDir,'.m');
-%
-if strcmp(targetDir,'.') || strcmp(targetDir,'..'),
-    error(['Error: The name of the target directory must be explicitly given (no ''.'' or ''..'').'])
-elseif isempty(targetDir),
-     targetDir = [rootDir,'_protected'];
-     disp(['Warning: The target directory is named ''',rootDir,'''_protected.'])
-elseif strcmp(rootDir,targetDir),
-     targetDir = [rootDir,'_protected'];
-     disp(['Warning: The target directory is named ''',rootDir,'''_protected.'])
-end
-%   
-iselectDir = 1;
-%
-if ~exist(targetDir,'dir'),%build the directory tree structure in targetDir
-	mkdir(targetDir);
-    %
-    for ii = 2:length(listDir),
-        childrenTargetDir = [targetDir,'/',listDir{ii}(length(listDir{1})+2:end)];
-        if isempty(strfind(childrenTargetDir,'CVS')) && ~strcmp(childrenTargetDir(1),'.'),%remove CVS and SVN directories, as well as all hidden directories for distribution
-            %
-            flagchildrenTargetDir = 1;
-            %
-            for irejectedDir = 1:length(rejectedDir),
-                if ~isempty(strfind(childrenTargetDir,rejectedDir{irejectedDir})),
-                    flagchildrenTargetDir = 0;
-                    break;
+    if ~exist(targetDir,'dir'),%build the directory tree structure in targetDir
+        mkdir(targetDir);
+        %
+        for ii = 2:length(listDir),
+            childrenTargetDir = [targetDir,'/',listDir{ii}(length(listDir{1})+2:end)];
+            if isempty(strfind(childrenTargetDir,'CVS')) && ~strcmp(childrenTargetDir(1),'.'),%remove CVS and SVN directories, as well as all hidden directories for distribution
+                %
+                flagchildrenTargetDir = 1;
+                %
+                for irejectedDir = 1:length(rejectedDir),
+                    if ~isempty(strfind(childrenTargetDir,rejectedDir{irejectedDir})),
+                        flagchildrenTargetDir = 0;
+                        break;
+                    end
+                end
+                %        
+                if flagchildrenTargetDir,    
+                    mkdir(childrenTargetDir);
+                    listselectedchildrenDir{iselectDir} = [listDir{ii}(length(listDir{1})+2:end)];
+                    iselectDir = iselectDir + 1;
                 end
             end
-            %        
-            if flagchildrenTargetDir,    
-                mkdir(childrenTargetDir);
-                listselectedchildrenDir{iselectDir} = [listDir{ii}(length(listDir{1})+2:end)];
-                iselectDir = iselectDir + 1;
-            end
         end
+    else
+        error(['Error: The target directory ''',targetDir,''' already exists.'])
     end
-else
-    error(['Error: The target directory ''',targetDir,''' already exists.'])
-end
-%
-cd(dirinit);
-%
-nPfiles = 0;
-nOtherfiles = 0;
-%
-[listMfile,dummy] = get_all_filesname_yp(rootDir,'.m',0);
-%
-if length(otherFile) > 0,
-    [listOtherfile,dummy] = get_all_filesname_yp(rootDir,otherFile,0);
-end
-%
-cd(targetDir)
-%
-for ii = 1:length(listMfile),
     %
-    flagMfile = 1; 
+    nPfiles = 0;
+    nOtherfiles = 0;
     %
-    for irejectedFile = 1:length(rejectedFile),
-        if ~isempty(strfind(listMfile{ii},rejectedFile{irejectedFile})),
-            flagMfile = 0;
-            break;
-        end
-    end
-    %        
-    if flagMfile,   
-        pcode(listMfile{ii});
-        nPfiles = nPfiles + 1;
-    end        
-end
-%
-cd(dirinit);
-%
-for ii = 1:length(listOtherfile),
-    flagOtherfile = 1; 
+    nPfiles = p_encode(dirinit,rootDir,targetDir,rejectedFile,mmode,nPfiles);
     %
-    for irejectedFile = 1:length(rejectedFile),
-        if ~isempty(strfind(listOtherfile{ii},rejectedFile{irejectedFile})),
-            flagOtherfile = 0;
-            break;
-        end
-    end
-    %        
-    if flagOtherfile,   
+    nOtherfiles = transfer(dirinit,rootDir,targetDir,rejectedFile,otherFile,nOtherfiles);
+    %
+    for ii = 1:length(listselectedchildrenDir),
         %
-        copyfile(listOtherfile{ii},targetDir);
-        nOtherfiles = nOtherfiles + 1;
+        childrenTargetDir = [targetDir,'/',listselectedchildrenDir{ii}];
+        childrenRootDir = [rootDir,'/',listselectedchildrenDir{ii}];
         %
+        nPfiles = p_encode(dirinit,childrenRootDir,childrenTargetDir,rejectedFile,mmode,nPfiles);
+        %
+        nOtherfiles = transfer(dirinit,childrenRootDir,childrenTargetDir,rejectedFile,otherFile,nOtherfiles);
     end
-end
-%
-for ii = 1:length(listselectedchildrenDir),
     %
     cd(dirinit);
     %
-    childrenTargetDir = [targetDir,'/',listselectedchildrenDir{ii}];
-    childrenRootDir = [rootDir,'/',listselectedchildrenDir{ii}];
-    %
-    [listMfile,dummy] = get_all_filesname_yp(childrenRootDir,'.m',0);
-    %
-    if length(otherFile) > 0,
-        [listOtherfile,dummy] = get_all_filesname_yp(childrenRootDir,otherFile,0);
+    while 1,%clean empty folders
+        %
+        jj = 1;
+        %
+        for ii = 1:length(listselectedchildrenDir),
+            %
+            childrenTargetDir = [targetDir,'/',listselectedchildrenDir{ii}];
+            %
+            if isempty(ls(childrenTargetDir)),
+                rmdir(childrenTargetDir);
+            else
+                listselectedchildrenDirNew{jj} = listselectedchildrenDir{ii};
+                jj = jj + 1;
+            end
+            %  
+        end
+        %
+        if length(listselectedchildrenDirNew) == length(listselectedchildrenDir),
+            break;
+        else
+            listselectedchildrenDir = listselectedchildrenDirNew;
+            clear listselectedchildrenDirNew;
+        end
     end
     %
-    cd(childrenTargetDir);
+    if tarmode,%gzip folder for backup or transfer
+        tar([targetDir,'.gz'],targetDir);
+        %
+        cd(dirinit);%clear protected folder
+        rmdir(targetDir,'s');
+    end
+%
+end
+%
+function [nPfiles] = p_encode(dirinit,rootDir,targetDir,rejectedFile,mmode,nPfiles)
+    %
+    cd(dirinit);
+    %
+    [listMfile,dummy] = get_all_filesname_yp(rootDir,'.m',0);
+    %
+    cd(targetDir);
     %
     for ii = 1:length(listMfile),
         %
@@ -197,13 +210,31 @@ for ii = 1:length(listselectedchildrenDir),
             end
         end
         %        
-        if flagMfile,   
-            pcode(listMfile{ii});
+        if flagMfile,
+            %
+            if ~mmode,
+                pcode(listMfile{ii});
+            else
+                cd(dirinit);
+                copyfile(listMfile{ii},targetDir);
+            end
+            %
             nPfiles = nPfiles + 1;
         end        
     end
+end
+%
+function [nOtherfiles] = transfer(dirinit,rootDir,targetDir,rejectedFile,otherFile,nOtherfiles)
     %
     cd(dirinit);
+    %
+    if length(otherFile) > 0,
+        [listOtherfile,dummy] = get_all_filesname_yp(rootDir,otherFile,0);
+    else
+        return;
+    end
+    %
+    cd(targetDir);
     %
     for ii = 1:length(listOtherfile),
         %
@@ -218,46 +249,10 @@ for ii = 1:length(listselectedchildrenDir),
         %        
         if flagOtherfile,   
             %
-            copyfile(listOtherfile{ii},childrenTargetDir);
+            cd(dirinit);
+            copyfile(listOtherfile{ii},targetDir);
             nOtherfiles = nOtherfiles + 1;
             %
         end
     end
 end
-%
-cd(dirinit);
-%
-while 1,%clean empty folders
-    %
-    jj = 1;
-    %
-    for ii = 1:length(listselectedchildrenDir),
-        %
-        childrenTargetDir = [targetDir,'/',listselectedchildrenDir{ii}];
-        %
-        if isempty(ls(childrenTargetDir)),
-            rmdir(childrenTargetDir);
-        else
-            listselectedchildrenDirNew{jj} = listselectedchildrenDir{ii};
-            jj = jj + 1;
-        end
-        %  
-    end
-    %
-    if length(listselectedchildrenDirNew) == length(listselectedchildrenDir),
-        break;
-    else
-        listselectedchildrenDir = listselectedchildrenDirNew;
-        clear listselectedchildrenDirNew;
-    end
-end
-%
-if tarmode,%gzip folder for backup or transfer
-    tar([targetDir,'.gz'],targetDir);
-    %
-    cd(dirinit);%clear protected folder
-    rmdir(targetDir,'s');
-end
-%
-
-
