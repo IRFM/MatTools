@@ -1,86 +1,92 @@
-function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir,tarmode,rejectedDir,rejectedFile,otherFile,mmode)
-%MatTools - Build protected files from M-files
+function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir0,copymode,rejectedDir,rejectedFile,otherFile)
+%MatTools - Build (un)protected files from M-files. Clean the folder
 %
 % List all the files and directories recursively in a directory (with the full path)
+% Clean the target folder from CVS, SVN and hidden files (.*), but keep the
+% subfolder structure of rootDir. Overwrite is always active. 
 %
 % INPUTS: 
 %
-%   - rootDir: path to the root directory which contains m-files [string]
+%   - rootDir: absolute path to the root directory which contains m-files [string]
 %       default = pwd;
-%   - targetDir : path to the target directory which contains p-files [string]
+%   - targetDir : absolute path to the target directory which contains p-files. If isempty, create by default a compressed folder only (overwrite active) named rootDir_compressed [string]
 %       default = rooDir;
-%   - tarmode : if 1, tar the folder which contains p-files. The tar file has the name of the target directory [1,1]
-%       default = 0;
+%   - copymode : copy mode which depends of targetDir too, if 0: targetDir is identical to rootDir without CVS, SVN and hidden files only, (-1/+1): force an uncompressed folder with (m/p)-files, (-2/+2): force a compressed folder with (m/p)-files
+%       default = 1;
 %   - rejectedDir : List of rejected children directories [cell]
 %       default = '';
 %   - rejectedFile : List of rejected files [cell]
 %       default = '';
 %   - otherFile : List of other files to be transfered [cell]
 %       default = '';
-%   - mmode : the output folder which contains m-files (1) or p-files (0) [1,1]
-%       default = 0;
 %
 % OUTPUTS:
 %
-%   - nPfiles: number of protected files created [1,1]
+%   - nPfiles: number of protected files created (m-files or p-files) [1,1]
 %   - nOtherfiles: number of other files transfered [1,1]
 %
 % EXAMPLE:
 %
-%  make_pfiles('MatRemote','',1,{'private','php'},'',{'.sh','.plist'})
+%  make_pfiles('MatRemote','MatRemote_distribution',0,{'private','php'},'',{'.sh','.plist'})
+%  make_pfiles('MatRemote','',0,{'private','php'},'',{'.sh','.plist'})
 %  make_pfiles('MatRemote','',1,'','cleanbridge',{'.sh','.plist'})
 %  make_pfiles('MatRemote','',1,'',{'remote_ASIPP_SHENMA','bridgeurl','bridge.php'},{'.sh','.plist','.php'})
-%  make_pfiles('MatRemote','',0,'',{'remote_ASIPP_SHENMA','bridgeurl','bridge.php'},{'.sh','.plist','.php'},1)
+%  make_pfiles('MatRemote','',0,'',{'remote_ASIPP_SHENMA','bridgeurl','bridge.php'},{'.sh','.plist','.php'})
 %
 if nargin == 0,
         %
         rootDir = pwd;
-        targetDir = rootDir;
-        tarmode = 0;
+        targetDir0 = '';
+        copymode = 1;
         rejectedDir = '';
         rejectedFile = '';
         otherFile = '';
-        mmode = 0;
         %
     elseif nargin == 1,
         %
-        targetDir = rootDir;
-        tarmode = 0;
+        targetDir0 = '';
+        copymode = 1;
         rejectedDir = '';
         rejectedFile = '';
         otherFile = '';
-        mmode = 0;
         %
     elseif nargin == 2,
         %
-        tarmode = 0;
+        copymode = 1;
         rejectedDir = '';
         rejectedFile = '';
         otherFile = '';
-        mmode = 0;
         %
     elseif nargin == 3,
         %
         rejectedDir = '';
         rejectedFile = '';
         otherFile = '';
-        mmode = 0;
         %
     elseif nargin == 4,
         %
         rejectedFile = '';
         otherFile = '';
-        mmode = 0;
         %
     elseif nargin == 5,
         %
         otherFile = '';
-        mmode = 0;
         %
-    elseif nargin == 6,
-        %
-        mmode = 0;
-        %
+    end
+    %
+    if isempty(rootDir),
+        rootDir = pwd;
+    else
+        if ~exist(rootDir,'dir'),
+            error('The path to the root folder is wrong')
+        end  
+    end
+    %
+    if strcmp(rootDir,pwd),
+        ifilesep = strfind(rootDir,filesep);
+        dirinit = rootDir(1:ifilesep(end));
+    else
+        dirinit = pwd;
     end
     %
     if ~isempty(rejectedDir) && ~iscell(rejectedDir),
@@ -95,53 +101,74 @@ if nargin == 0,
         otherFile = {otherFile};
     end
     %
-    dirinit = pwd;
+    if copymode == 0,
+        rejectedDir = {};
+        rejectedFile = {};
+        otherFile = '';
+        disp(['Warning: copymode = 0, all extra options are disabled. Mirror copy of ''',rootDir,''' directory without CVS, SVN and hidden files.'])
+    end
+    %
+    cd(dirinit);
     %
     [dummy,listDir] = get_all_filesname_yp(rootDir,'.m');
     %
-    if strcmp(targetDir,'.') || strcmp(targetDir,'..'),
-        error(['Error: The name of the target directory must be explicitly given (no ''.'' or ''..'').'])
-    elseif isempty(targetDir),
-         targetDir = [rootDir,'_protected'];
-         disp(['Warning: The target directory is named ''',rootDir,'''_protected.'])
-    elseif strcmp(rootDir,targetDir),
-         targetDir = [rootDir,'_protected'];
-         disp(['Warning: The target directory is named ''',rootDir,'''_protected.'])
+    if abs(copymode) == 2,
+        dirmode = ' compressed ';
+        cmpmode = '.gz';
+    else
+        dirmode = ' ';
+        cmpmode = '';
+    end
+    %
+    if strcmp(targetDir0,'.') || strcmp(targetDir0,'..'),
+        disp(['Warning: The name of the target directory must be explicitly given or empty (no ''.'' or ''..'').'])
+        disp(['Warning: The',dirmode,'target directory is named ''',rootDir,'_protected',cmpmode,'''.'])
+        targetDir0 = [rootDir,'_protected'];
+    elseif isempty(targetDir0),
+         disp(['Warning: The',dirmode,'target directory is named ''',rootDir,'_protected',cmpmode,'''.'])
+         targetDir0 = [rootDir,'_protected'];
+    elseif strcmp(rootDir,targetDir0),
+         disp(['Warning: The',dirmode,'target directory is named ''',rootDir,'_protected',cmpmode,'''.'])
+         targetDir0 = [rootDir,'_protected'];
     end
     %   
     iselectDir = 1;
     %
-    if ~exist(targetDir,'dir'),%build the directory tree structure in targetDir
-        mkdir(targetDir);
-        %
-        for ii = 2:length(listDir),
-            childrenTargetDir = [targetDir,'/',listDir{ii}(length(listDir{1})+2:end)];
-            if isempty(strfind(childrenTargetDir,'CVS')) && ~strcmp(childrenTargetDir(1),'.'),%remove CVS and SVN directories, as well as all hidden directories for distribution
-                %
-                flagchildrenTargetDir = 1;
-                %
-                for irejectedDir = 1:length(rejectedDir),
-                    if ~isempty(strfind(childrenTargetDir,rejectedDir{irejectedDir})),
-                        flagchildrenTargetDir = 0;
-                        break;
-                    end
-                end
-                %        
-                if flagchildrenTargetDir,    
-                    mkdir(childrenTargetDir);
-                    listselectedchildrenDir{iselectDir} = [listDir{ii}(length(listDir{1})+2:end)];
-                    iselectDir = iselectDir + 1;
+    targetDir = tempname(pwd);
+    %
+    while exist(targetDir,'dir'),
+        targetDir = tempname(pwd);
+    end
+    %
+    mkdir(targetDir);
+    %
+    listselectedchildrenDir = '';
+    %
+    for ii = 2:length(listDir),
+        childrenTargetDir = [targetDir,'/',listDir{ii}(length(listDir{1})+2:end)];
+        if isempty(strfind(childrenTargetDir,'CVS')) && ~strcmp(childrenTargetDir(1),'.'),%remove CVS and SVN directories, as well as all hidden directories for distribution
+            %
+            flagchildrenTargetDir = 1;
+            %
+            for irejectedDir = 1:length(rejectedDir),
+                if ~isempty(strfind(childrenTargetDir,rejectedDir{irejectedDir})),
+                    flagchildrenTargetDir = 0;
+                    break;
                 end
             end
+            %        
+            if flagchildrenTargetDir,    
+                mkdir(childrenTargetDir);
+                listselectedchildrenDir{iselectDir} = [listDir{ii}(length(listDir{1})+2:end)];
+                iselectDir = iselectDir + 1;
+            end
         end
-    else
-        error(['Error: The target directory ''',targetDir,''' already exists.'])
     end
     %
     nPfiles = 0;
     nOtherfiles = 0;
     %
-    nPfiles = p_encode(dirinit,rootDir,targetDir,rejectedFile,mmode,nPfiles);
+    nPfiles = p_encode(dirinit,rootDir,targetDir,rejectedFile,copymode,nPfiles);
     %
     nOtherfiles = transfer(dirinit,rootDir,targetDir,rejectedFile,otherFile,nOtherfiles);
     %
@@ -150,48 +177,59 @@ if nargin == 0,
         childrenTargetDir = [targetDir,'/',listselectedchildrenDir{ii}];
         childrenRootDir = [rootDir,'/',listselectedchildrenDir{ii}];
         %
-        nPfiles = p_encode(dirinit,childrenRootDir,childrenTargetDir,rejectedFile,mmode,nPfiles);
+        nPfiles = p_encode(dirinit,childrenRootDir,childrenTargetDir,rejectedFile,copymode,nPfiles);
         %
         nOtherfiles = transfer(dirinit,childrenRootDir,childrenTargetDir,rejectedFile,otherFile,nOtherfiles);
     end
     %
     cd(dirinit);
     %
-    while 1,%clean empty folders
+    if abs(copymode) <= 1,%uncompressed folder case
         %
-        jj = 1;
-        %
-        for ii = 1:length(listselectedchildrenDir),
+        if ~exist(targetDir0),
             %
-            childrenTargetDir = [targetDir,'/',listselectedchildrenDir{ii}];
+            deleteemptysubfolder(targetDir);
             %
-            if isempty(ls(childrenTargetDir)),
-                rmdir(childrenTargetDir);
-            else
-                listselectedchildrenDirNew{jj} = listselectedchildrenDir{ii};
-                jj = jj + 1;
-            end
-            %  
-        end
-        %
-        if length(listselectedchildrenDirNew) == length(listselectedchildrenDir),
-            break;
+            movefile(targetDir,targetDir0)
         else
-            listselectedchildrenDir = listselectedchildrenDirNew;
-            clear listselectedchildrenDirNew;
+            %
+            [listFile0,listDir0] = get_all_filesname_yp(targetDir0);
+            [listFile,listDir] = get_all_filesname_yp(targetDir);
+            %
+            checksubfolderconsistency(targetDir0,listDir0,targetDir,listDir);
+            %
+            for ilistFile = 1:length(listFile),
+                fname = listFile{ilistFile}(length(targetDir)+1:end);
+                copyfile(listFile{ilistFile},[targetDir0,fname])
+            end
+            %
+            for ilistFile0 = 1:length(listFile0),
+                fname0 = listFile0{ilistFile0}(length(targetDir0)+1:end);
+                if ~exist([targetDir,fname0],'file'),
+                    if exist(listFile0{ilistFile0},'file'),
+                        delete([targetDir0,fname0]);
+                    end
+                end
+            end            
+            %
+            deleteemptysubfolder(targetDir0);
+            %
+            rmdir(targetDir,'s');%clear tmp folder
+            %
         end
+        %
+    elseif abs(copymode) == 2,%tar folder for backup or transfer
+        %
+        tar([targetDir0,'.gz'],targetDir);
+        rmdir(targetDir,'s');%clear tmp folder
+        %
     end
     %
-    if tarmode,%gzip folder for backup or transfer
-        tar([targetDir,'.gz'],targetDir);
-        %
-        cd(dirinit);%clear protected folder
-        rmdir(targetDir,'s');
-    end
-%
+    cd(dirinit);   
+    %
 end
 %
-function [nPfiles] = p_encode(dirinit,rootDir,targetDir,rejectedFile,mmode,nPfiles)
+function [nPfiles] = p_encode(dirinit,rootDir,targetDir,rejectedFile,copymode,nPfiles)
     %
     cd(dirinit);
     %
@@ -212,7 +250,8 @@ function [nPfiles] = p_encode(dirinit,rootDir,targetDir,rejectedFile,mmode,nPfil
         %        
         if flagMfile,
             %
-            if ~mmode,
+           % if strcmp(listMfile{ii},'MatRemote/Bridge/bridge2remote.m'),keyboard,end
+            if copymode > 0,
                 pcode(listMfile{ii});
             else
                 cd(dirinit);
@@ -231,7 +270,11 @@ function [nOtherfiles] = transfer(dirinit,rootDir,targetDir,rejectedFile,otherFi
     if length(otherFile) > 0,
         [listOtherfile,dummy] = get_all_filesname_yp(rootDir,otherFile,0);
     else
-        return;
+        if iscell(otherFile),
+            return;
+        else
+            [listOtherfile,dummy] = get_all_filesname_yp(rootDir,otherFile,0);
+        end
     end
     %
     cd(targetDir);
@@ -250,9 +293,57 @@ function [nOtherfiles] = transfer(dirinit,rootDir,targetDir,rejectedFile,otherFi
         if flagOtherfile,   
             %
             cd(dirinit);
-            copyfile(listOtherfile{ii},targetDir);
-            nOtherfiles = nOtherfiles + 1;
+            if ~strcmp(listOtherfile{ii},'.')
+                copyfile(listOtherfile{ii},targetDir);
+                nOtherfiles = nOtherfiles + 1;
+            end
             %
         end
     end
+end
+%
+function [listselectedchildrenDir] = deleteemptysubfolder(targetDir)
+    %
+    listselectedchildrenDirNew = '';
+    %
+    [dummy,listDir] = get_all_filesname_yp(targetDir);
+    listselectedchildrenDir = listDir(2:end);
+    %
+    while 1,%clean empty subfolders in targetDir
+        %
+        jj = 1;
+        %
+        for ii = 1:length(listselectedchildrenDir),
+            %
+            childrenTargetDir = listselectedchildrenDir{ii};
+            %
+            if isempty(ls(childrenTargetDir)),
+                rmdir(childrenTargetDir);
+            else
+                listselectedchildrenDirNew{jj} = listselectedchildrenDir{ii};
+                jj = jj + 1;
+            end
+            %  
+        end
+        %
+        if length(listselectedchildrenDirNew) == length(listselectedchildrenDir),
+            break;
+        else
+            listselectedchildrenDir = listselectedchildrenDirNew;
+            clear listselectedchildrenDirNew;
+        end
+    end
+end
+%
+function [listselectedchildrenDir] = checksubfolderconsistency(targetDir0,listDir0,targetDir,listDir)
+    %
+    for ilistDir = 2:length(listDir),
+        dirname = listDir{ilistDir}(length(targetDir)+1:end);
+        %
+        if ~exist([targetDir0,dirname],'dir')
+            mkdir([targetDir0,dirname]);
+        end
+        %
+    end
+    %
 end
