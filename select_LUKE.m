@@ -1,7 +1,9 @@
 function select_LUKE_jd(luke_root)
 %
-% In interactive mode, list LUKE versions listed in the cell array 'lukeversions' and prompt user selection 
+% luke_root can be :
 %
+% - empty or 'select' : prompt LUKE version from list in getappdata(0,'lukeversions');
+% - a path to LUKE    : set path to the corresponding LUKE version
 %
 % example of startup.m file :
 %
@@ -25,11 +27,17 @@ function select_LUKE_jd(luke_root)
 % %
 % setappdata(0,'lukeversions',lukeversions)
 % %
-% luke_root = getenv('luke_root');
+% luke_root = getenv('luke_root');%prescribed by remote computing
+% %
+% LUKE = getenv('LUKE');%prescribed by environement
 % %
 % if ~isempty(luke_root),
 %     %
 %     select_LUKE_jd(luke_root)
+%     %
+% elseif ~isempty(LUKE),
+%     %
+%     select_LUKE_jd(LUKE)
 %     %
 % else
 %     %
