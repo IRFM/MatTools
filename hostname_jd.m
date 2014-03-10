@@ -7,7 +7,7 @@ function lochostname = hostname_jd
 [s,lochostname] = system('hostname -f');% local hostname
 if s ~= 0,
     lochostname = getenv('hostname');%For remote computing (xgrid)
-    if isempty(lhostname),
+    if isempty(lochostname),
         error('local hostname could not be retrieved either from ''hostname -f'' or ''getenv(''hostname'')''');
     end
 end
