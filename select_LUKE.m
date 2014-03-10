@@ -46,8 +46,7 @@ function select_LUKE_jd(luke_root)
 %     disp(' ');
 %     %
 % end
-% %
-
+%
 %
 if nargin < 1,
     luke_root = 'select';
@@ -96,11 +95,15 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
     addpath([luke_root,'Project_DKE/DKE']);
     setpath_luke_jd(luke_root);
     %
-    disp([' Path set to ',luke_root])
+    disp([' --> Path set to ',luke_root])
+    %
+    if ~isempty(getenv('LUKE_MENU')),%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
+        startup_LUKE_yp(luke_root);
+    end
     %
 else
     %
-    disp(' No path set to LUKE')
+    disp(' --> No path set to LUKE')
     %
 end  
 %
