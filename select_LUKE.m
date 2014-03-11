@@ -90,6 +90,10 @@ if strcmp(luke_root,'select') && ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true')
     %
 end
 %
+if ~isempty(luke_root) && ~strcmp(luke_root(end),filesep),
+    luke_root = [luke_root,filesep];
+end
+%
 if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
     %
     addpath([luke_root,'Project_DKE/DKE']);
