@@ -8,6 +8,10 @@ if nargin < 2,
     digits = 3;
 end
 %
+if nargin < 1,
+    time_id = clock;
+end
+%
 if isnumeric(time_id),
     year = num2str(time_id(1) - 2000);
     month = num2str(time_id(2));
