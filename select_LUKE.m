@@ -101,8 +101,10 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
     %
     disp([' --> Path set to ',luke_root])
     %
-    if ~isempty(getenv('LUKE_MENU')),%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
-        startup_LUKE_yp(luke_root);
+    if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS_jobid) && isempty(jobtimeid),
+        if ~isempty(getenv('LUKE_MENU')),%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
+            startup_LUKE_yp(luke_root);
+        end
     end
     %
 else
