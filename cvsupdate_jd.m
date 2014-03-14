@@ -6,11 +6,20 @@ wd = pwd;
 %
 for ifnc = 1:nfncs,
     cvsfnc = cvsfunctions{ifnc};
-    workpath = fileparts(which(cvsfnc));
+    %
+    if length(cvsfnc) > 2 && strcmp(cvsfnc(end-1:end),'.m'),%case of function within folder
+        cvsfnc = cvsfnc(1:end-2);
+        %
+        workpath = fileparts(which(cvsfnc));
+        msg = 'No path set to function ';
+    else
+        workpath = getenv(cvsfnc);
+        msg = 'The following environment variable is not set : ';
+    end
     %
     if isempty(workpath),
         res.(cvsfnc) = 1;
-        txt.(cvsfnc) = ['No path set to function ',cvsfnc,'.'];
+        txt.(cvsfnc) = [msg,cvsfnc];
     else
         cd(workpath);
         [res.(cvsfnc),txt.(cvsfnc)] = unix('cvs update -d -P');
