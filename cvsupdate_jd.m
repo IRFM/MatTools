@@ -23,6 +23,9 @@ for ifnc = 1:nfncs,
     else
         cd(workpath);
         [res.(cvsfnc),txt.(cvsfnc)] = unix('cvs update -d -P');
+        if res.(cvsfnc) == 1 && any(strfind(txt.(cvsfnc),[char(10),'C '])),% res = 1 because of cvs conflict
+            res.(cvsfnc) = 0;
+        end
     end
     %
 end
