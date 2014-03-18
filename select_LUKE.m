@@ -57,7 +57,9 @@ end
 PBS_jobid = getenv('PBS_JOBID');
 jobtimeid = getenv('jobtimeid');
 %
-if strcmp(luke_root,'select') && ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS_jobid) && isempty(jobtimeid),
+inter_mode = ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS_jobid) && isempty(jobtimeid);% interactive mode
+%
+if strcmp(luke_root,'select') && inter_mode,
     %
     % select LUKE version
     %
@@ -101,10 +103,8 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
     %
     disp([' --> Path set to ',luke_root])
     %
-    if ~strcmp(getenv('MDCE_USE_ML_LICENSING'),'true') && ~isdeployed && isempty(PBS_jobid) && isempty(jobtimeid),
-        if ~isempty(getenv('LUKE_MENU')),%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
-            startup_LUKE_yp(luke_root);
-        end
+    if ~isempty(getenv('LUKE_MENU')) && inter_mode,%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
+        startup_LUKE_yp(luke_root);
     end
     %
 else
