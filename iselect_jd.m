@@ -144,7 +144,12 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
                 style.textheight = 2*style.fontsize;
             end
             %
-            width = style.textwidth + 3*style.buthsep + style.butwidth;
+            if ~strcmp(type,'edit'),
+                width = style.textwidth + 3*style.buthsep + style.butwidth;
+            else
+                width = style.textwidth + style.butwidth + style.longbutwidth + 4*style.buthsep;
+            end
+            %
             if strcmp(type,'buttongroup'),
                 height = (nb+1)*style.textheight + 3*style.butvsep;
             else%if strcmp(type,'popupmenu'),
