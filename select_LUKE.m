@@ -1,6 +1,6 @@
 function select_LUKE_jd(luke_root)
 %
-% luke_root can be : 
+% luke_root can be :  
 %
 % - empty or 'select' : prompt LUKE version from list in getappdata(0,'lukeversions');
 % - a path to LUKE    : set path to the corresponding LUKE version
