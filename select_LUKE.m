@@ -57,13 +57,11 @@ function select_LUKE_jd(luke_root,bridge_enforce)
 % end
 %
 %
-if nargin == 0,
-    luke_root = 'select';
-    bridge_enforce = false;
+if nargin < 2,
+    bridge_enforce = NaN;
 end
-%
-if nargin == 1,
-    bridge_enforce = false;
+if nargin < 1,
+    luke_root = 'select';
 end
 %
 % set no path in batch mode, except if environment variable LUKE exists 
