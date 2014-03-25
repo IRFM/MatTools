@@ -1,16 +1,17 @@
-function select_LUKE_jd(luke_root,bridge_enforce)
+function select_LUKE_jd(luke_root,link_mode)
 %
 % luke_root can be :  
 %
 % - empty or 'select' : prompt LUKE version from list in getappdata(0,'lukeversions');
 % - a path to LUKE    : set path to the corresponding LUKE version
 %
-%   - bridge_enforce : [NaN, empty, -1, 0 or 1] 
+%   - link_mode : connection mode prescription
 %       o -1  : disable remote profiles
-%       o NaN : (default) use value from remote.bridge_enforce
-%       o []  : tests both modes and give priority to ssh key pair
-%       o 0   : tests and authorize only ssh key pair,
-%       o 1   : tests and authorize only bridge mode
+%       o NaN : (default) use value from remote.link_mode
+%       o []  : give priority to (0) ssh key pair, (1) ssh bridge, (2) url/ftp bridge
+%       o 0   : ssh key pair enforced
+%       o 1   : ssh bridge enforced
+%       o 2   : url/ftp bridge enforced
 %
 
 %
@@ -58,7 +59,7 @@ function select_LUKE_jd(luke_root,bridge_enforce)
 %
 %
 if nargin < 2,
-    bridge_enforce = NaN;
+    link_mode = NaN;
 end
 if nargin < 1,
     luke_root = 'select';
@@ -111,7 +112,7 @@ end
 if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
     %
     addpath([luke_root,'Project_DKE/DKE']);
-    setpath_luke_jd(luke_root,bridge_enforce);
+    setpath_luke_jd(luke_root,link_mode);
     %
     disp([' --> Path set to ',luke_root])
     %
