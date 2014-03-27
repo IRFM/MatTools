@@ -1,4 +1,4 @@
-function select_LUKE_jd(luke_root,link_mode)
+function select_LUKE(luke_root,link_mode)
 %
 % luke_root can be :  
 %
