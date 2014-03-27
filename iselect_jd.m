@@ -244,7 +244,7 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
             uiwait;
             %
             if isnumeric(presel),
-                select = str2double(get(b,'String'));
+                select = str2num(get(b,'String'));
             else
                 select = get(b,'String');
             end
