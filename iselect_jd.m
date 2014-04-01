@@ -29,7 +29,7 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
     %       
     %       - presel : pre-selected option (optional) : integer from 0:nb for buttongroup & popupmenu, string or numerical array for edit 
     %
-    %       - type : type of GUI (optional) ex : buttongroup, popupmenu, edit
+    %       - type : type of GUI (optional) ex : buttongroup, popupmenu, listbox, edit
     %
     % OUTPUT : 
     %
@@ -39,7 +39,7 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
         error('Not enough arguments');
     end
     %
-    if nargin < 6 || ~ischar(type) || ~any(strcmp({'buttongroup','popupmenu','edit'},type)),
+    if nargin < 6 || ~ischar(type) || ~any(strcmp({'buttongroup','popupmenu','listbox','edit'},type)),
         if isempty(s),
             type = 'edit';
         else
@@ -66,13 +66,15 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
     if nargin < 2,
         if strcmp(type,'edit'),
             titletext = 'Please provide input :';
+        elseif strcmp(type,'listbox'),
+            titletext = 'Please select one or more of the following :';
         else
             titletext = 'Please select one of the following :';
         end
     end
     %
     if ~strcmp(type,'edit') && ~iscell(s) && (~isstruct(s) || (isstruct(s) && ~isfield(s,'text'))),
-        error('wrong style for s in buttongroup or popupmenu type');
+        error('wrong style for s in buttongroup, popupmenu, or listbox type');
     elseif strcmp(type,'edit') && ~isempty(s),
         disp(['WARNING : First input argument ',inputname(1),' neglected in iselect_jd with type ''edit''']);
         s = {};
@@ -150,7 +152,7 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
                 width = style.textwidth + style.butwidth + style.longbutwidth + 4*style.buthsep;
             end
             %
-            if strcmp(type,'buttongroup'),
+            if strcmp(type,'buttongroup') || strcmp(type,'listbox'),
                 height = (nb+1)*style.textheight + 3*style.butvsep;
             else%if strcmp(type,'popupmenu'),
                 height = style.textheight + 2*style.butvsep;
@@ -169,7 +171,7 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
             style.textwidth = width - style.butwidth - style.longbutwidth - 4*style.buthsep;
         end
         %
-        if strcmp(type,'buttongroup'),
+        if strcmp(type,'buttongroup') || strcmp(type,'listbox'),
             style.textheight = fix(height - 3*style.butvsep)/(nb+1);
         elseif strcmp(type,'popupmenu'),
             style.textheight = height - 2*style.butvsep;
@@ -225,6 +227,16 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
         elseif strcmp(type,'popupmenu'),
             %
             b = uicontrol(p,'Style','popupmenu','String',str,'Value',presel,'Position',[2*style.buthsep + style.textwidth,style.buthsep,style.butwidth,style.butheight],'FontName',style.fontname,'FontUnits','pixels','FontSize',style.fontsize,'Callback','uiresume');
+            %
+            uiwait;
+            %
+            select = get(b,'Value');
+            %
+        elseif strcmp(type,'listbox'),
+            %
+            b = uicontrol(p,'Style','listbox','String',str,'Value',presel,'Position',[style.buthsep,style.buthsep,style.textwidth,height - 3*style.buthsep - style.textheight],'FontName',style.fontname,'FontUnits','pixels','FontSize',style.fontsize,'Max',2);
+            %
+            ok = uicontrol(p,'Style','pushbutton','String','OK','Position',[2*style.buthsep + style.textwidth,style.buthsep,style.butwidth,style.butheight],'FontName',style.fontname,'FontSize',style.fontsize,'Enable','on','Callback','uiresume');
             %
             uiwait;
             %
