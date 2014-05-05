@@ -1,4 +1,4 @@
-function [varargout] = get_all_filesname_yp(dirName,extName,dirLevel)
+function [varargout] = get_all_filesname_yp(dirName,extName,dirLevel,excludedName)
 %MatTools - List all the files and directories recursively in a directory (with the full path)
 %
 % List all the files and directories recursively in a directory (with the full path)
@@ -6,8 +6,9 @@ function [varargout] = get_all_filesname_yp(dirName,extName,dirLevel)
 % INPUTS: 
 %
 %   - dirName: directory path [string]
-%   - extName: file extension [string]
+%   - extName: file extension [string or cell of strings]
 %   - dirLevel: maximum directory level [1,1]
+%   - excludedName: excluded names [cell of strings]
 %
 % OUTPUTS:
 %
@@ -29,15 +30,22 @@ if nargin == 0,
 	dirName = pwd; 
     extName = [];
     dirLevel = Inf;
+    excludedName = [];
 elseif nargin == 1,
     extName = [];
     dirLevel = Inf;
+    excludedName = [];
 elseif nargin == 2,
     dirLevel = Inf;
+    excludedName = [];
 end
 %
 if ~iscell(extName) && strcmpi(extName,'.*'),
    extName = [];
+end
+%
+if ~iscell(excludedName),
+    excludedName = {excludedName};
 end
 %
 listFile = [];
@@ -84,7 +92,7 @@ while level <= dirLevel,
     if isempty(index),break;end
     index = index(1);
     %
-    [listdir,listfile] = getdir(listDir{index},flag,stc);
+    [listdir,listfile] = getdir(listDir{index},flag,stc,excludedName);
     %
     listFile = [listFile listfile];
     %
@@ -113,7 +121,7 @@ end
 %
 return
 %
-function [listdir,listfile] = getdir(folder,flag,ext)
+function [listdir,listfile] = getdir(folder,flag,ext,excludedName)
     %
     S = dir(folder);
     %
@@ -130,8 +138,20 @@ function [listdir,listfile] = getdir(folder,flag,ext)
         name = S(i).name;
         %
         if S(i).isdir,
-            if strcmp(name,'.') || strcmp(name,'..'),
-                continue;
+            if strcmp(name,'.') || strcmp(name,'..') || strcmp(name,'CVS'),
+                continue
+            else
+                flag_dir = 1;
+                for ie = 1:length(excludedName),
+                    if strcmp(name,excludedName{ie})
+                        flag_dir = 0;
+                        break
+                    end
+                end
+                %
+                if ~flag_dir,                
+                    continue;
+                end    
             end
             %
             if flag == 2 || flag == 3,
