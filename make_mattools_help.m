@@ -29,6 +29,7 @@ helptools = '';
 %
 texfilelist = '';
 %
-make_help(which('MatTools'),texfilelist,excludedfoldernames,helptools,verbose)
+ref_folder = what('MatTools');
+make_help(ref_folder.path,texfilelist,excludedfoldernames,helptools,verbose)
 %
 cd(dirinit);
