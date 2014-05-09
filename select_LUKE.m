@@ -20,19 +20,22 @@ function select_LUKE(luke_root,link_mode)
 
 % function startup_LUKE
 % %
-% % Setup paths to MatRemote and MatTools toolboxes
+% % Setup paths to MatRemote, MatTools and MatHelp toolboxes
 % %
-% matremote_path = '/home/joan/Work/MatRemote';
-% mattools_path = '/home/joan/Work/MatTools';
+% matremote_path = 'pathtoMatRemote/MatRemote';
+% mattools_path = 'pathtoMatTools/MatTools';
+% mattools_path = 'pathtoMatHelp/MatHelp';
 % %
 % addpath(matremote_path);% MatRemote toolbox
 % addpath([matremote_path,filesep,'Profiles']);% remote profiles
 % addpath([matremote_path,filesep,'Bridge']);% remote profiles
 % addpath(mattools_path);% MatTools toolbox
+% addpath(mathelp_path);% MatHelp toolbox
+% addpath([mathelp_path,filesep,'m2html']);% m2html toolbox
 % %
 % lukeversions = {...
-%    '/home/joan/Work/LUKE/',...
-%    '/home/joan/Work/LUKE_1_10/',...
+%    'pathtoLUKE/LUKE/',...
+%    'pathtoLUKE/LUKE_1_10/',...
 %    };
 % %
 % setappdata(0,'lukeversions',lukeversions)
