@@ -19,6 +19,13 @@ months = ['Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec
 %
 days = ['Mon';'Tue';'Wen';'Thu';'Fri';'Sat';'Sun'];
 %
+if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'forwarding.'))
+    refstr = 'forwarding.';
+    txt = txt(strfind(txt,refstr)+length(refstr):end);          
+end
+%
+txt = strtrim(txt);
+%
 timeref = clock;
 %
 year = int2str(timeref(1)-1);%previous year (in case of a simulation is launched in december and results obtained in january)
