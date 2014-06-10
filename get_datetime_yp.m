@@ -17,7 +17,7 @@ function datetime = get_datetime_yp(txt)
 %
 months = ['Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'];
 %
-days = ['Mon';'Tue';'Wen';'Thu';'Fri';'Sat';'Sun'];
+days = ['Mon';'Tue';'Wed';'Thu';'Fri';'Sat';'Sun'];
 %
 if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'forwarding.'))
     refstr = 'forwarding.';
