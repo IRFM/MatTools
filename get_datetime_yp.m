@@ -24,6 +24,11 @@ if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'forwarding.'))
     txt = txt(strfind(txt,refstr)+length(refstr):end);          
 end
 %
+if ~isempty(strfind(txt,'export:')) && ~isempty(strfind(txt,'found.'))
+    refstr = 'found.';
+    txt = txt(strfind(txt,refstr)+length(refstr):end);          
+end
+%
 txt = strtrim(txt);
 %
 timeref = clock;
