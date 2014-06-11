@@ -46,6 +46,8 @@ if isempty(iyear),
     %
 end
 %
+if length(iyear) > 1, iyear = iyear(1);end
+%
 flag = 0;
 %
 for iday = 1:7,
