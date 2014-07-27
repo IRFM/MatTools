@@ -36,6 +36,10 @@ timeref = clock;
 year = int2str(timeref(1)-1);%previous year (in case of a simulation is launched in december and results obtained in january)
 iyear = strfind(txt,year);
 %
+if ~strcmp(txt(iyear-1),' ') ||  ~strcmp(txt(iyear+4),' ')
+    iyear = '';
+end
+%
 if isempty(iyear),
     year = int2str(timeref(1));%actual year
     iyear = strfind(txt,year);
