@@ -29,6 +29,10 @@ if ~isempty(strfind(txt,'export:')) && ~isempty(strfind(txt,'found.'))
     txt = txt(strfind(txt,refstr)+length(refstr):end);          
 end
 %
+if ~isempty(strfind(txt,'Successful ssh identification !'))
+    txt = txt(length('Successful ssh identification !')+2:end);
+end
+%
 txt = strtrim(txt);
 %
 timeref = clock;
