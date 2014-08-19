@@ -24,6 +24,11 @@ if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'forwarding.'))
     txt = txt(strfind(txt,refstr)+length(refstr):end);          
 end
 %
+if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'address'))
+    refstr = 'address';
+    txt = txt(strfind(txt,refstr)+length(refstr):end);          
+end
+%
 if ~isempty(strfind(txt,'export:')) && ~isempty(strfind(txt,'found.'))
     refstr = 'found.';
     txt = txt(strfind(txt,refstr)+length(refstr):end);          
@@ -35,64 +40,74 @@ end
 %
 txt = strtrim(txt);
 %
-timeref = clock;
-%
-year = int2str(timeref(1)-1);%previous year (in case of a simulation is launched in december and results obtained in january)
-iyear = strfind(txt,year);
-%
-if ~strcmp(txt(iyear-1),' ') ||  ~strcmp(txt(iyear+4),' ')
-    iyear = '';
-end
-%
-if isempty(iyear),
-    year = int2str(timeref(1));%actual year
+if ~isempty(str2double(txt)) && length(txt) == 14,%numeric date format YYYYMMDDHHMMSS from command "date +%Y%m%d%H%M%S"
+    year = txt(1:4);
+    month = months(str2double(txt(5:6)),:);
+    day = txt(7:8);
+    hour = txt(9:10);
+    minute = txt(11:12);
+    second = txt(13:14);
+else
+    %
+    timeref = clock;
+    %
+    year = int2str(timeref(1)-1);%previous year (in case of a simulation is launched in december and results obtained in january)
     iyear = strfind(txt,year);
     %
-    if isempty(iyear),
-        error(['Unrecognized year or year too old in ',txt]);
+    if ~strcmp(txt(iyear-1),' ') ||  ~strcmp(txt(iyear+4),' ')
+        iyear = '';
     end
     %
-end
-%
-if length(iyear) > 1, iyear = iyear(1);end
-%
-flag = 0;
-%
-for iday = 1:7,
-    if strcmp(txt(1:3),days(iday,:))
-        flag = 1;
-        break
+    if isempty(iyear),
+        year = int2str(timeref(1));%actual year
+        iyear = strfind(txt,year);
+        %
+        if isempty(iyear),
+            error(['Unrecognized year or year too old in ',txt]);
+        end
+        %
     end
-end
-if flag,
-        %
-        month = txt(5:7);
-        day = ['0',num2str(str2num(txt(8:11)))];
-        hour = txt(12:13);
-        minute = txt(15:16);
-        second = txt(18:19);
-        %
-else
-    if strcmp(txt(iyear+4),'-'),%GNU format
-        %
-        month_gnu= txt(iyear+5:iyear+6);
-        month = months(str2num(month_gnu),:);
-        %
-        day = txt(iyear+8:iyear+9);
-        hour = txt(iyear+11:iyear+12);
-        minute = txt(iyear+14:iyear+15);
-        second = txt(iyear+17:iyear+18);
-        %
-    else,%POSIX format
-        %
-        month_posix = txt(iyear-16:iyear-14);  
-        month = month_posix;
-        %
-        day = txt(iyear-12:iyear-11);
-        hour = txt(iyear-9:iyear-8);
-        minute = txt(iyear-6:iyear-5);
-        second = txt(iyear-3:iyear-2);
-        %
+    %
+    if length(iyear) > 1, iyear = iyear(1);end
+    %
+    flag = 0;
+    %
+    for iday = 1:7,
+        if strcmp(txt(1:3),days(iday,:))
+            flag = 1;
+            break
+        end
+    end
+    if flag,
+            %
+            month = txt(5:7);
+            day = ['0',num2str(str2double(txt(8:11)))];
+            hour = txt(12:13);
+            minute = txt(15:16);
+            second = txt(18:19);
+            %
+    else
+        if strcmp(txt(iyear+4),'-'),%GNU format
+            %
+            month_gnu= txt(iyear+5:iyear+6);
+            month = months(str2double(month_gnu),:);
+            %
+            day = txt(iyear+8:iyear+9);
+            hour = txt(iyear+11:iyear+12);
+            minute = txt(iyear+14:iyear+15);
+            second = txt(iyear+17:iyear+18);
+            %
+        else%POSIX format
+            %
+            month_posix = txt(iyear-16:iyear-14);  
+            month = month_posix;
+            %
+            day = txt(iyear-12:iyear-11);
+            hour = txt(iyear-9:iyear-8);
+            minute = txt(iyear-6:iyear-5);
+            second = txt(iyear-3:iyear-2);
+            %
+        end
     end
 end
 %
