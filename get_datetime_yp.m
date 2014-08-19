@@ -21,17 +21,17 @@ days = ['Mon';'Tue';'Wed';'Thu';'Fri';'Sat';'Sun'];
 %
 if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'forwarding.'))
     refstr = 'forwarding.';
-    txt = txt(strfind(txt,refstr)+length(refstr):end);          
+    txt = txt(max(strfind(txt,refstr))+length(refstr):end);          
 end
 %
 if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'address'))
     refstr = 'address';
-    txt = txt(strfind(txt,refstr)+length(refstr):end);          
+    txt = txt(max(strfind(txt,refstr))+length(refstr):end);          
 end
 %
 if ~isempty(strfind(txt,'export:')) && ~isempty(strfind(txt,'found.'))
     refstr = 'found.';
-    txt = txt(strfind(txt,refstr)+length(refstr):end);          
+    txt = txt(max(strfind(txt,refstr))+length(refstr):end);          
 end
 %
 if ~isempty(strfind(txt,'Successful ssh identification !'))
