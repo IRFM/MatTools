@@ -66,6 +66,15 @@ if nargin < 2,
 end
 if nargin < 1,
     luke_root = 'select';
+    %
+    disp(' ')
+    link_mode = input(['Do you want to desactivate remote calculations : \n(0) no \n(1) yes\n',' [0] ? ']);
+    if isempty(link_mode) || link_mode == 1
+        link_mode = -1;
+    else
+        link_mode = NaN;
+    end
+    %
 end
 %
 % set no path in batch mode, except if environment variable LUKE exists 
