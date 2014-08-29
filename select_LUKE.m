@@ -6,7 +6,8 @@ function select_LUKE(luke_root,link_mode)
 % - a path to LUKE    : set path to the corresponding LUKE version
 %
 %   - link_mode : connection mode prescription
-%       o -1  : disable remote profiles
+%       o -2  : disable remote profiles
+%       o -1  : local profiles only
 %       o NaN : (default) use value from remote.link_mode
 %       o []  : give priority to (0) ssh key pair, (1) ssh bridge, (2) url/ftp bridge
 %       o 0   : ssh key pair enforced
@@ -43,14 +44,27 @@ function select_LUKE(luke_root,link_mode)
 % luke_root = getenv('luke_root');%prescribed by remote computing
 % %
 % LUKE = getenv('LUKE');%prescribed by environement
+%
+% link_mode = getenv('luke_link_mode');%prescribed by remote computing
+% if ~isempty(link_mode),
+%     if strcmp(link_mode,'[]'),
+%         link_mode = [];
+%     else
+%         link_mode = str2double(link_mode);
+%     end
+% elseif ~isempty(luke_root),
+%     link_mode = -1;% local profiles only; no second level remote computing unless prescribed by luke_link_mode
+% else
+%     link_mode = NaN;% default value, select link_mode prescribed by remote profiles
+% end
 % %
 % if ~isempty(luke_root),
 %     %
-%     select_LUKE_jd(luke_root)
+%     select_LUKE(luke_root,link_mode)
 %     %
 % elseif ~isempty(LUKE),
 %     %
-%     select_LUKE_jd(LUKE)
+%     select_LUKE(LUKE,link_mode)
 %     %
 % else
 %     %
@@ -66,15 +80,6 @@ if nargin < 2,
 end
 if nargin < 1,
     luke_root = 'select';
-    %
-    disp(' ')
-    link_mode = input(['Do you want to desactivate remote calculations : \n(0) no \n(1) yes\n',' [0] ? ']);
-    if isempty(link_mode) || link_mode == 1
-        link_mode = -1;
-    else
-        link_mode = NaN;
-    end
-    %
 end
 %
 % set no path in batch mode, except if environment variable LUKE exists 
@@ -92,29 +97,37 @@ if strcmp(luke_root,'select') && inter_mode,
     nvers = length(lukeversions);
     %
     if nvers > 0,
-        lukestr = 'Which version of LUKE do you want to use : \n(0) none\n';                                                                                                                                       
+        lukestr = 'Which version of LUKE do you want to use : \n[0] none\n';                                                                                                                                       
         for ivers = 1:nvers,
-            lukestr = [lukestr,'(',num2str(ivers),') ',lukeversions{ivers},'\n'];
+            lukestr = [lukestr,'[',num2str(ivers),'] ',lukeversions{ivers},'\n'];
         end
-        lukestr = [lukestr,' [1] ? '];
-        lukever = input(lukestr);
+        lukever = input_dke_yp(lukestr,1,0:nvers);
     else
         lukever = 0;
     end        
     %
-    if isempty(lukever) 
-        lukever = 1;
-    end
-    if ~isnumeric(lukever) || length(lukever) ~= 1 || ~any(lukever == 0:nvers),
-        lukever = 0;
-    end
-    %
     if lukever > 0,
         luke_root = lukeversions{lukever};
+        %
+        % select link mode
+        %
+        if exist([luke_root,'Project_DKE/DKE'],'dir'),
+            disp(' ')
+            link_modes = {NaN,-2,-1,[],0,1,2};
+            link_mode_options = input_dke_yp(['Select remote calculations capabilities (link mode) :\n',...
+                '[1] all profiles according to remote.link_mode (link mode=NaN)\n',...
+                '[2] no remote computing (link mode=-2)\n',...
+                '[3] only local profiles (link mode=-1)\n',...
+                '[4] all profiles trying ssh, ssh+ssh and ssh+php in order (link mode=[])\n',...
+                '[5] only profiles available via direct ssh (link mode=0)\n',...
+                '[6] only profiles available via ssh+ssh (link mode=1)\n',...
+                '[7] only profiles available via ssh+php (link mode=2)\n'],1,1:7);
+            link_mode = link_modes{link_mode_options};
+        end
     else
         luke_root = '';
     end
-    %
+    %    
 end
 %
 if ~isempty(luke_root) && ~strcmp(luke_root(end),filesep),
