@@ -89,11 +89,10 @@ while flag <= 0,
         %
         if ~isempty(message),
             warnstr = message;
+            disp(' ');
+            disp(['====> Warning: ',warnstr]);
+            disp(' ');
         end
-        %
-        disp(' ');
-        disp(['====> Warning: ',warnstr]);
-        disp(' ');
         %
     end
     %
