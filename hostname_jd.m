@@ -11,7 +11,6 @@ if s ~= 0,
 end
 %
 if s ~= 0,
-    lochostname = getenv('hostname');%For remote computing (xgrid)
     if isempty(lochostname),
         error('local hostname could not be retrieved either from ''hostname -f'' or ''getenv(''hostname'')''');
     end
