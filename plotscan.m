@@ -11,8 +11,13 @@ end
 %
 figure('Name',[scandisplay.ylabel,' = f(',scandisplay.scan(scandisplay.iscan ).label,')']),clf
 %
-graph1D_jd(value,data,0,0,[scandisplay.scan(scandisplay.iscan).label,' (',scandisplay.scan(scandisplay.iscan).unit,')'],scandisplay.ylabel,scandisplay.title,NaN,xlim,NaN,scandisplay.style,scandisplay.marker,scandisplay.color,scandisplay.width);
-% 
+if isfield(scandisplay,'y_axis')
+    graph1D_jd(value,data,0,0,[scandisplay.scan(scandisplay.iscan).label,' (',scandisplay.scan(scandisplay.iscan).unit,')'],scandisplay.ylabel,scandisplay.title,NaN,xlim,scandisplay.y_axis,scandisplay.style,scandisplay.marker,scandisplay.color,scandisplay.width);
+    scandisplay = rmfield(scandisplay,'y_axis');
+else
+    graph1D_jd(value,data,0,0,[scandisplay.scan(scandisplay.iscan).label,' (',scandisplay.scan(scandisplay.iscan).unit,')'],scandisplay.ylabel,scandisplay.title,NaN,xlim,NaN,scandisplay.style,scandisplay.marker,scandisplay.color,scandisplay.width);
+end 
+%
 maxlegendscan = 0;
 for jscan = 1:length(scandisplay.scan(scandisplay.iscan + (-1)^(scandisplay.iscan+1)).value),
     legendscan{jscan} = [scandisplay.scan(scandisplay.iscan + (-1)^(scandisplay.iscan+1)).label,' = ',num2str(scandisplay.scan(scandisplay.iscan + (-1)^(scandisplay.iscan+1)).value(jscan)), ' (',scandisplay.scan(scandisplay.iscan + (-1)^(scandisplay.iscan+1)).unit,')'];
