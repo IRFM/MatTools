@@ -35,6 +35,11 @@ if ~isempty(strfind(txt,'Successful ssh identification !'))
     txt = txt(length('Successful ssh identification !')+2:end);
 end
 %
+if ~isempty(strfind(txt,'*******************************************************************************')) && ~isempty(strfind(txt,'*******************************************************************************'))
+    refstr = '*******************************************************************************';
+    txt = txt(max(strfind(txt,refstr))+length(refstr):end);          
+end
+%
 txt = strtrim(txt);
 %
 if ~isempty(str2double(txt)) && length(txt) == 14,%numeric date format YYYYMMDDHHMMSS from matremotecheck or command "date +%Y%m%d%H%M%S"
