@@ -42,6 +42,4 @@ if isempty(redminepath),disp('WARNING: the ''redminepath'' path is empty.');end
 %
 make_help(verbose,ref_folder(1).path,redminepath,texfilelist,excludedfoldernames,helptools);
 %
-make_help(verbose,ref_folder(1).path,redminepath,texfilelist,excludedfoldernames,helptools);
-%
 cd(dirinit);
