@@ -18,7 +18,7 @@ if isempty(workpath),
     txt = {[msg,gitfnc],''};
 else
     cd(workpath);
-    [res,txt{1}] = unix('git update -d -P');
+    [res,txt{1}] = unix(['git ',gitmode,' ',workpath]);
     if res == 1 && any(strfind(txt{1},[char(10),'C '])),% res = 1 because of git conflict
         res = 0;
     end
