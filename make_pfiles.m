@@ -2,7 +2,7 @@ function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir0,copymode,rejecte
 %MatTools - Build (un)protected files from M-files. Clean the folder
 %
 % List all the files and directories recursively in a directory (with the full path)
-% Clean the target folder from CVS, SVN and hidden files (.*), but keep the
+% Clean the target folder from CVS, SVN, Git and hidden files (.*), but keep the
 % subfolder structure of rootDir. Overwrite is always active. 
 %
 % INPUTS: 
