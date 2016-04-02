@@ -138,7 +138,7 @@ function [listdir,listfile] = getdir(folder,flag,ext,excludedName)
         name = S(i).name;
         %
         if S(i).isdir,
-            if strcmp(name,'.') || strcmp(name,'..') || strcmp(name,'CVS'),
+            if strcmp(name,'.') || strcmp(name,'..') || strcmp(name,'CVS') || strcmp(name,'.git'),
                 continue
             else
                 flag_dir = 1;
