@@ -138,10 +138,8 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
     %
     addpath([luke_root,'Project_DKE/DKE']);
     %
+    disp(' ');
     testremote_mode = input_dke_yp('Test all remote connections (0) no, (1) yes',0,0:1);
-    if testremote_mode == 0,
-        disp(' WARNING: Type ''check_remote_yp;'' to verify if a specific connection is operational or not before launching any remote calculation.')
-    end
     setpath_luke_jd(luke_root,link_mode,testremote_mode);
     %
     disp([' --> Path set to ',luke_root])
