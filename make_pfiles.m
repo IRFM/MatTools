@@ -11,7 +11,10 @@ function [nPfiles,nOtherfiles] = make_pfiles(rootDir,targetDir0,copymode,rejecte
 %       default = pwd;
 %   - targetDir : absolute path to the target directory which contains p-files. If isempty, create by default a compressed folder only (overwrite active) named rootDir_compressed [string]
 %       default = rooDir;
-%   - copymode : copy mode which depends of targetDir too, if 0: targetDir is identical to rootDir without CVS, SVN and hidden files only, (-1/+1): force an uncompressed folder with (m/p)-files, (-2/+2): force a compressed folder with (m/p)-files
+%   - copymode : copy mode which depends of targetDir too
+%                (0): targetDir is identical to rootDir without CVS, SVN and hidden files only
+%            (-1/+1): force an uncompressed folder with (m/p)-files
+%            (-2/+2): force a compressed folder with (m/p)-files
 %       default = 1;
 %   - rejectedDir : List of rejected children directories [cell]
 %       default = '';
@@ -105,7 +108,7 @@ if nargin == 0,
         rejectedDir = {};
         rejectedFile = {};
         otherFile = '';
-        disp(['Warning: copymode = 0, all extra options are disabled. Mirror copy of ''',rootDir,''' directory without CVS, SVN and hidden files.'])
+        disp(['Warning: copymode = 0, all extra options are disabled. Mirror copy of ''',rootDir,''' directory without CVS, SVN and hidden files (.git, ...).'])
     end
     %
     cd(dirinit);
@@ -146,7 +149,7 @@ if nargin == 0,
     %
     for ii = 2:length(listDir),
         childrenTargetDir = [targetDir,'/',listDir{ii}(length(listDir{1})+2:end)];
-        if isempty(strfind(childrenTargetDir,'CVS')) && ~strcmp(childrenTargetDir(1),'.'),%remove CVS and SVN directories, as well as all hidden directories for distribution
+        if isempty(strfind(childrenTargetDir,'CVS')) && ~strcmp(childrenTargetDir(1),'.'),%remove CVS and SVN directories, as well as all hidden directories for distribution (.git, ...)
             %
             flagchildrenTargetDir = 1;
             %
