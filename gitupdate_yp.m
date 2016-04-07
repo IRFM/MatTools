@@ -16,15 +16,18 @@ if isempty(workpath),
     res = [1,NaN];
     txt = {[msg,gitfnc],''};
 else
-    cd(workpath);
-    slashes = strfind(workpath,'/');
-    folder = workpath(slashes(end)+1:end);
-    new_gitmode = strrep(gitmode, '*', folder);
-    %
-    cd('..');%root folder for the updated project
-    workpath = pwd;
-    %
-    [res,txt{1}] = unix(['cd ',workpath,';',new_gitmode]);
+    if (strfind(gitmode,'pull') || strfind(gitmode,'fetch')),%for git pull or git fetch commands
+        [res,txt{1}] = unix(['cd ',workpath,';',gitmode]);
+    else,%for git archive command
+        slashes = strfind(workpath,'/');
+        folder = workpath(slashes(end)+1:end);
+        new_gitmode = strrep(gitmode, '*', folder);
+        %
+        cd('..');%root folder for the updated project
+        new_workpath = pwd;
+        %
+        [res,txt{1}] = unix(['cd ',new_workpath,';',new_gitmode]);
+    end
     %
     if res == 1,
         res = 0;
