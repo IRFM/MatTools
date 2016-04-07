@@ -16,8 +16,8 @@ if isempty(workpath),
     res = [1,NaN];
     txt = {[msg,gitfnc],''};
 else
-    cd(workpath);
-    [res,txt{1}] = unix(['cd ',workpath,';git ',gitmode]);
+    cd(workpath);cd('..');workpath = pwd.
+    [res,txt{1}] = unix(['cd ',workpath,';',gitmode]);
     if res == 1 && any(strfind(txt{1},[char(10),'C '])),% res = 1 because of git conflict
         res = 0;
     end
@@ -30,8 +30,10 @@ else
         txt{2} = '';
     %end
     
-    res(3)  = NaN
+    res(3)  = NaN;
     txt{3} = workpath;
+    res(4)  = NaN;
+    txt{4} = gitmode;
 end
 %
 cd(wd);
