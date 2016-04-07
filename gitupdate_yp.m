@@ -17,9 +17,14 @@ if isempty(workpath),
     txt = {[msg,gitfnc],''};
 else
     cd(workpath);
+    slashes = strfind(workpath,'/')
+    folder = workpath(slashes(end)+1:end);
+    new_gitmode = strrep(gitmode, '*', folder);
+    %
     cd('..');%root folder for the updated project
     workpath = pwd;
-    [res,txt{1}] = unix(['cd ',workpath,';',gitmode]);
+    %
+    [res,txt{1}] = unix(['cd ',workpath,';',new_gitmode]);
     %
     if res == 1,
         res = 0;
