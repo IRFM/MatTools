@@ -17,7 +17,7 @@ if isempty(workpath),
     txt = {[msg,gitfnc],''};
 else
     cd(workpath);
-    slashes = strfind(workpath,'/')
+    slashes = strfind(workpath,'/');
     folder = workpath(slashes(end)+1:end);
     new_gitmode = strrep(gitmode, '*', folder);
     %
