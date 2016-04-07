@@ -21,6 +21,7 @@ else
     if res == 1 && any(strfind(txt{1},[char(10),'C '])),% res = 1 because of git conflict
         res = 0;
     end
+    %
     %TODO: check if necessary
     %if res == 0 && nargin >= 2 && ~isempty(gitrights),
     %    [res(2),txt{2}] = unix(gitrights);
@@ -28,6 +29,9 @@ else
         res(2) = NaN;
         txt{2} = '';
     %end
+    
+    res(3)  = NaN
+    txt{3} = workpath;
 end
 %
 cd(wd);
