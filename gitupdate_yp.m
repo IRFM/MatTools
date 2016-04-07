@@ -16,7 +16,7 @@ if isempty(workpath),
     res = [1,NaN];
     txt = {[msg,gitfnc],''};
 else
-    if (strfind(gitmode,'pull') || strfind(gitmode,'fetch')),%for git pull or git fetch commands
+    if (strfind(gitmode,'pull') | strfind(gitmode,'fetch')),%for git pull or git fetch commands
         [res,txt{1}] = unix(['cd ',workpath,';',gitmode]);
     else,%for git archive command
         slashes = strfind(workpath,'/');
