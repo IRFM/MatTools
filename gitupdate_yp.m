@@ -19,7 +19,7 @@ else
 	slashes = strfind(workpath,'/');
 	folder = workpath(slashes(end)+1:end);
     %
-    for igit = 1:length(gitmode)
+    for igit = 1:length(gitmode),
         %
         if (strfind(gitmode{igit},'pull') | strfind(gitmode{igit},'fetch')),%for git pull or git fetch commands
             %
@@ -27,7 +27,7 @@ else
             %
             [res,txt{igit}] = unix(['cd ',workpath,';',new_gitmode]);
             %
-        elseif strfind(gitmode{igit},'archive'),%for git archive command
+        else strfind(gitmode{igit},'archive'),%for git archive command
             %
             new_gitmode = strrep(gitmode{igit}, '*', folder);
             %
