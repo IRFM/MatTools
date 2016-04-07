@@ -16,24 +16,15 @@ if isempty(workpath),
     res = [1,NaN];
     txt = {[msg,gitfnc],''};
 else
-    cd(workpath);cd('..');workpath = pwd.
+    cd(workpath);
+    cd('..');%root folder for the updated project
+    workpath = pwd;
     [res,txt{1}] = unix(['cd ',workpath,';',gitmode]);
-    if res == 1 && any(strfind(txt{1},[char(10),'C '])),% res = 1 because of git conflict
+    %
+    if res == 1,
         res = 0;
     end
     %
-    %TODO: check if necessary
-    %if res == 0 && nargin >= 2 && ~isempty(gitrights),
-    %    [res(2),txt{2}] = unix(gitrights);
-    %else
-        res(2) = NaN;
-        txt{2} = '';
-    %end
-    
-    res(3)  = NaN;
-    txt{3} = workpath;
-    res(4)  = NaN;
-    txt{4} = gitmode;
 end
 %
 cd(wd);
