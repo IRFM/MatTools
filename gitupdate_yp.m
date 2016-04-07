@@ -27,7 +27,7 @@ else
             %
             [res,txt{igit}] = unix(['cd ',workpath,';',new_gitmode]);
             %
-        else strfind(gitmode{igit},'archive'),%for git archive command
+        else,%for git archive command
             %
             new_gitmode = strrep(gitmode{igit}, '*', folder);
             %
