@@ -22,26 +22,14 @@ else
 	slashes = strfind(workpath,'/');
 	folder = workpath(slashes(end)+1:end);
     %
-    for igit = 1:length(gitmode),
+    gitmode_fieldnames = fieldnames(gitmode);
+    %
+    for igit = 1:length(gitmode_fieldnames),
         %
-        if (strfind(gitmode{igit},'pull') | strfind(gitmode{igit},'fetch')),%for git pull or git fetch commands
-            %
-            new_gitmode = strrep(gitmode{igit}, '*', folder);
-            %
-            [res,txt{igit}] = unix(['cd ',workpath,';',new_gitmode]);
-            %
-        else,%for git archive command
-            %
-            new_gitmode = strrep(gitmode{igit}, '*', folder);
-            %
-            new_workpath = workpath(1:slashes(end));
-            %
-            [res,txt{igit}] = unix(['cd ',new_workpath,';',new_gitmode]);
-            %
-        end
+        [res,txt{igit}] = unix(gitmode.(gitmode_fieldnames{igit}));
         %
         if debugmode,
-             txt{igit} = [txt{igit},'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath,'----debugmode:new_workpath--->',new_workpath,'----debugmode:new_gitmode--->',new_gitmode];   
+             txt{igit} = [txt{igit},'----debugmode:cmd--->',gitmode.(gitmode_fieldnames{igit}),'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
         end
         %
         if res == 1,
