@@ -26,10 +26,11 @@ else
     %
     for igit = 1:length(gitmode_fieldnames),
         %
-        [res,txt{igit}] = unix(gitmode.(gitmode_fieldnames{igit}));
+        gitcmd = strrep(gitmode.(gitmode_fieldnames{igit}), '*', folder);
+        [res,txt{igit}] = unix(gitcmd);
         %
         if debugmode,
-             txt{igit} = [txt{igit},'----debugmode:cmd--->',gitmode.(gitmode_fieldnames{igit}),'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
+             txt{igit} = [txt{igit},'----debugmode:cmd--->',gitcmd,'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
         end
         %
         if res == 1,
