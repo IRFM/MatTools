@@ -104,118 +104,120 @@ str{6} = 'present only in structure 2';
 %
 totcomp = 1;
 %
-for is = 1:nf1,
-    %
-    rescomp = 0;
-    info = '';
-    %
-    fname = f1{is};
-    eval(['v1 = struct1.',fname,';']);
-    %
-    if ~isfield(struct2,fname),
-        rescomp = 4;
-    else
+for is0 = 1:length(struct1)
+    for is = 1:nf1,
         %
-        eval(['v2 = struct2.',fname,';']);
+        rescomp = 0;
+        info = '';
         %
-        if ischar(v1),
+        fname = f1{is};
+        eval(['v1 = struct1(',int2str(is0),').',fname,';']);
+        %
+        if ~isfield(struct2(is0),fname),
+            rescomp = 4;
+        else
             %
-            if ischar(v2),
-                if ~strcmp(v1,v2),
-                    rescomp = 1;
-                    info = ['s1 : ',v1,' ; s2 : ',v2];
-                end
-            else
-                rescomp = 2;
-            end
+            eval(['v2 = struct2(',int2str(is0),').',fname,';']);
             %
-        elseif isnumeric(v1), 
-            %
-            if isnumeric(v2),
-                if length(size(v2)) == length(size(v1)) && all(size(v2) == size(v1)),
-                    %
-                    mask_NaN_v1 = isnan(v1);
-                    mask_NaN_v2 = isnan(v2);
-                    %
-                    mask_inf_v1 = isinf(v1);
-                    mask_inf_v2 = isinf(v2);
-                    %
-                    mask_num_v1 = ~mask_NaN_v1 & ~mask_inf_v1;
-                    mask_num_v2 = ~mask_NaN_v2 & ~mask_inf_v2;
-                    %
-                    if any(mask_NaN_v1(:) ~= mask_NaN_v2(:)) | any(mask_inf_v1(:) ~= mask_inf_v2(:))
+            if ischar(v1),
+                %
+                if ischar(v2),
+                    if ~strcmp(v1,v2),
                         rescomp = 1;
-					elseif any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
-                        reldiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:)))./(abs(v1(mask_num_v1(:))) + realmin));
-                        absdiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:))));
-                        if length(size(v1)) == 2 && all(size(v1) == [1,1]),
-                            info = ['s1 : ',num2str(v1),' ; s2 : ',num2str(v2)];
-                        else
-                            info = [' ; maximum relative difference is : ',num2str(reldiff),', maximum absolute difference is : ',num2str(absdiff)];
-                        end
-                        rescomp = 1;
+                        info = ['s1 : ',v1,' ; s2 : ',v2];
                     end
                 else
                     rescomp = 2;
                 end
-            else
-                rescomp = 2;
-            end
-            %
-        elseif islogical(v1),
-            %
-            if islogical(v2),
-                if size(v2) == size(v1),
-                    %
-                    if any(v1 ~= v2),
-                        rescomp = 1;
-                    end
-                else
-                    rescomp = 2;
-                end
-               
-            else
-                rescomp = 2;
-            end
-            %
-        elseif isstruct(v1),
-            %
-            if isstruct(v2) 
-                if ~comp_struct_jd(v1,v2,imag(display_mode),ignoredfieds,selectfields),
-                    rescomp = 1;
-                end
-            else
-                rescomp = 2;
-            end
-            %
-        elseif iscell(v1), 
-            %
-            if iscell(v2),
-                if size(v2) == size(v1),
-                    for ic = 1:numel(v1),
-                        if ~comp_struct_jd(v1{ic},v2{ic},0,ignoredfieds,selectfields),
+                %
+            elseif isnumeric(v1), 
+                %
+                if isnumeric(v2),
+                    if length(size(v2)) == length(size(v1)) && all(size(v2) == size(v1)),
+                        %
+                        mask_NaN_v1 = isnan(v1);
+                        mask_NaN_v2 = isnan(v2);
+                        %
+                        mask_inf_v1 = isinf(v1);
+                        mask_inf_v2 = isinf(v2);
+                        %
+                        mask_num_v1 = ~mask_NaN_v1 & ~mask_inf_v1;
+                        mask_num_v2 = ~mask_NaN_v2 & ~mask_inf_v2;
+                        %
+                        if any(mask_NaN_v1(:) ~= mask_NaN_v2(:)) | any(mask_inf_v1(:) ~= mask_inf_v2(:))
                             rescomp = 1;
-                            break
+                        elseif any(v1(mask_num_v1(:)) ~= v2(mask_num_v2(:))),
+                            reldiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:)))./(abs(v1(mask_num_v1(:))) + realmin));
+                            absdiff = max(abs(v2(mask_num_v1(:)) - v1(mask_num_v1(:))));
+                            if length(size(v1)) == 2 && all(size(v1) == [1,1]),
+                                info = ['s1 : ',num2str(v1),' ; s2 : ',num2str(v2)];
+                            else
+                                info = [' ; maximum relative difference is : ',num2str(reldiff),', maximum absolute difference is : ',num2str(absdiff)];
+                            end
+                            rescomp = 1;
                         end
+                    else
+                        rescomp = 2;
                     end
                 else
                     rescomp = 2;
                 end
-            else
-                rescomp = 2;
+                %
+            elseif islogical(v1),
+                %
+                if islogical(v2),
+                    if size(v2) == size(v1),
+                        %
+                        if any(v1 ~= v2),
+                            rescomp = 1;
+                        end
+                    else
+                        rescomp = 2;
+                    end
+
+                else
+                    rescomp = 2;
+                end
+                %
+            elseif isstruct(v1),
+                %
+                if isstruct(v2) 
+                    if ~comp_struct_jd(v1,v2,imag(display_mode),ignoredfieds,selectfields),
+                        rescomp = 1;
+                    end
+                else
+                    rescomp = 2;
+                end
+                %
+            elseif iscell(v1), 
+                %
+                if iscell(v2),
+                    if size(v2) == size(v1),
+                        for ic = 1:numel(v1),
+                            if ~comp_struct_jd(v1{ic},v2{ic},0,ignoredfieds,selectfields),
+                                rescomp = 1;
+                                break
+                            end
+                        end
+                    else
+                        rescomp = 2;
+                    end
+                else
+                    rescomp = 2;
+                end
+                %
+            else 
+                rescomp = 3;
             end
-            %
-        else 
-            rescomp = 3;
         end
+        %
+        if rescomp > 0,
+            totcomp = 0;
+        end
+        %
+        disp_jd(display_mode,['- ',fname,repmat(' ',[1,flength - length(fname)]),' : ',str{rescomp+1},info]);
+        %
     end
-    %
-    if rescomp > 0,
-        totcomp = 0;
-    end
-    %
-    disp_jd(display_mode,['- ',fname,repmat(' ',[1,flength - length(fname)]),' : ',str{rescomp+1},info]);
-    %
 end
 %
 for is = 1:length(f2),
