@@ -1,4 +1,4 @@
-function select_LUKE(luke_root,link_mode)
+function select_LUKE(luke_root,link_mode,display_mode,lukemenu_mode)
 %
 % luke_root can be :  
 %
@@ -75,6 +75,12 @@ function select_LUKE(luke_root,link_mode)
 % end
 %
 %
+if nargin < 4,
+    lukemenu_mode = 1;
+end
+if nargin < 3,
+    display_mode = 0;
+end
 if nargin < 2,
     link_mode = NaN;
 end
@@ -111,7 +117,7 @@ if strcmp(luke_root,'select') && inter_mode,
         %
         % select link mode
         %
-        if exist([luke_root,'Project_DKE/DKE'],'dir'),
+        if exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu_mode,
             disp(' ')
             link_modes = {NaN,-2,-1,[],0,1,2};
             link_mode_options = input_dke_yp(['Select remote calculations capabilities (link mode) :\n',...
@@ -134,17 +140,18 @@ if ~isempty(luke_root) && ~strcmp(luke_root(end),filesep),
     luke_root = [luke_root,filesep];
 end
 %
-if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir'),
+if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu_mode,
     %
     addpath([luke_root,'Project_DKE/DKE']);
     %
     disp(' ');
     testremote_mode = input_dke_yp('Test all remote connections (0) no, (1) yes',0,0:1);
-    setpath_luke_jd(luke_root,link_mode,testremote_mode);
+    %
+    setpath_luke_jd(luke_root,link_mode,testremote_mode,display_mode,inter_mode);
     %
     disp([' --> Path set to ',luke_root])
     %
-    if ~isempty(getenv('LUKE_MENU')) && inter_mode,%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
+    if ~isempty(getenv('LUKE_MENU')) && inter_mode && lukemenu_mode,%put the line setenv('LUKE_MENU','yes'); before the line startup_LUKE;
         startup_LUKE_yp(luke_root);
     end
     %
