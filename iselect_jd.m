@@ -246,7 +246,22 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
             %
             if isnumeric(presel),
                 spresel = num2str(presel);
-            else
+            elseif iscell(presel),
+                spresel = '{';
+                ncell = length(presel);
+                for icell = 1:ncell - 1,
+                    if isnumeric(presel{icell}),
+                        spresel = [spresel,num2str(presel{icell}),','];
+                    elseif ischar(presel{icell}),
+                        spresel = [spresel,presel{icell},','];
+                    end
+                end               
+                if isnumeric(presel{ncell}),
+                    spresel = [spresel,num2str(presel{ncell}),'}'];
+                elseif ischar(presel{ncell}),
+                    spresel = [spresel,presel{ncell},'}'];
+                end
+            elseif ischar(presel)
                 spresel = presel;
             end
             %
@@ -255,10 +270,22 @@ function select = iselect_jd(s,titletext,h,style,presel,type)
             %
             uiwait;
             %
+            sb = get(b,'String');
             if isnumeric(presel),
-                select = str2num(get(b,'String'));
-            else
-                select = get(b,'String');
+                select = str2num(sb);
+            elseif iscell(presel),
+                isep = find(sb == '{' | sb == ',' | sb == '}');
+                ncell = length(isep) - 1;
+                select = cell(1,ncell);
+                for icell = 1:ncell,
+                    if sb(isep(icell) + 1) == '''' && sb(isep(icell+1) - 1) == '''',
+                        select{icell} = sb(isep(icell) + 2:isep(icell+1) - 2);
+                    else
+                        select{icell} = str2num(sb(isep(icell) + 1:isep(icell+1) - 1));
+                    end
+                end               
+            elseif ischar(presel)
+                select = sb;
             end
             %
         end
