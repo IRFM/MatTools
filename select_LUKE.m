@@ -88,6 +88,8 @@ if nargin < 1,
     luke_root = 'select';
 end
 %
+testremote_mode = 0;
+%
 % set no path in batch mode, except if environment variable LUKE exists 
 %
 PBS_jobid = getenv('PBS_JOBID');
@@ -129,6 +131,10 @@ if strcmp(luke_root,'select') && inter_mode,
                 '[6] only profiles available via ssh+ssh (link mode=1)\n',...
                 '[7] only profiles available via ssh+php (link mode=2)\n'],1,1:7);
             link_mode = link_modes{link_mode_options};
+            %
+            disp(' ');
+            testremote_mode = input_dke_yp('Test all remote connections (0) no, (1) yes',0,0:1);
+            %
         end
     else
         luke_root = '';
@@ -145,7 +151,6 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     addpath([luke_root,'Project_DKE/DKE']);
     %
     disp(' ');
-    testremote_mode = input_dke_yp('Test all remote connections (0) no, (1) yes',0,0:1);
     %
     setpath_luke_jd(luke_root,link_mode,testremote_mode,display_mode,inter_mode);
     %
