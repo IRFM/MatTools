@@ -160,6 +160,10 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
         startup_LUKE_yp(luke_root);
     end
     %
+    disp(' ');
+    disp(' --> To start the graphical version of LUKE, run ''iluke''')
+    disp(' --> To start the command line version of LUKE, run ''irunluke_jd''')
+    %
 else
     %
     disp(' --> No path set to LUKE')
