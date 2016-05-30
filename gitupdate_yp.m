@@ -1,5 +1,9 @@
 function [res,txt,workpath] = gitupdate_yp(gitfnc,gitmode,debugmode)
 %
+if nargin < 3,
+    debugmode = 0;
+end
+%   
 wd = pwd;
 workpath = '';
 %
