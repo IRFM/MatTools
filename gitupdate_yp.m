@@ -22,18 +22,27 @@ else
 	slashes = strfind(workpath,'/');
 	folder = workpath(slashes(end)+1:end);
     %
-    gitmode_fieldnames = fieldnames(gitmode);
+    if isstruct(gitmode)
+        gitmode_fieldnames = fieldnames(gitmode);
+    else
+        gitmode_fieldnames = NaN;
+    end
     %
     for igit = 1:length(gitmode_fieldnames),
         %
-        gitcmd = strrep(gitmode.(gitmode_fieldnames{igit}), '*', folder);
+        if isstruct(gitmode)
+            gitcmd = strrep(gitmode.(gitmode_fieldnames{igit}), '*', folder);
+        else
+            gitcmd = strrep(gitmode, '*', folder);
+        end
+        %
         [res,txt{igit}] = unix(gitcmd);
         %
         if debugmode,
              txt{igit} = [txt{igit},'----debugmode:cmd--->',gitcmd,'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
         end
         %
-        if res == 1,
+        if res == 1 || strfind(txt{:},'error')
             res = 0;
         end
     end
