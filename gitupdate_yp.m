@@ -42,7 +42,7 @@ else
              txt{igit} = [txt{igit},'----debugmode:cmd--->',gitcmd,'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
         end
         %
-        if res == 1 || strfind(txt{:},'error')==1
+        if res == 1 | strfind(txt{:},'error')==1
             res = 0;
         end
     end
