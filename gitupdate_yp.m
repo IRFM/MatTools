@@ -1,6 +1,6 @@
-function [res,txt,workpath] = gitupdate_yp(gitfnc,gitmode,debugmode)
+function [res,txt,folder] = gitupdate_yp(gitfnc,gitmode,remote,debugmode)
 %
-if nargin < 3,
+if nargin < 4,
     debugmode = 0;
 end
 %   
@@ -40,14 +40,14 @@ else
             gitcmd = strrep(gitmode, '*', folder);
         end
         %
-        [res,txt{igit}] = unix(gitcmd);
+        igitcmd = strfind(gitcmd,';');
+        job.remotedatapath = gitcmd(4:igitcmd(1)-1);
+        job.directsearch =  1;
+        %
+        [res,txt{igit}] = matremotecmd(remote,job,gitcmd,remote.sshopts);
         %
         if debugmode,
              txt{igit} = [txt{igit},'----debugmode:cmd--->',gitcmd,'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
-        end
-        %
-        if res == 1 | strfind(txt{:},'error')==1
-            res = 0;
         end
     end
     %
