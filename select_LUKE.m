@@ -134,6 +134,12 @@ if strcmp(luke_root,'select') && inter_mode,
             %
             disp(' ');
             testremote_mode = input_dke_yp('Test all remote connections (0) no, (1) yes',0,0:1);
+            if testremote_mode,
+                testremote_mode1 = input_dke_yp('Test connection speed (upload and download) (0) no, (1) yes',0,0:1);
+                if testremote_mode1,
+                    testremote_mode = 2;
+                end
+            end 
             %
         end
     else
