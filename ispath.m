@@ -1,5 +1,5 @@
 function varargout = ispath(varargin)
-% ISPATH    Path check function
+% ISPATH    Path check function 
 %
 % IsPath    displays all paths that do not belong to matlabroot
 %
