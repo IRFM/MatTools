@@ -167,8 +167,16 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     end
     %
     disp(' ');
+    disp('-------------------------------------------------------------------------------------------')
+    disp('IMPORTANT: For tutorial, wiki, news, user forum, repository status, bug tracking related to')
+    disp('LUKE, MatRemote, MatTools and MatHelp toolboxes, please go to the Redmine project manager')
+    disp('at the web address: http://tolbachik.hd.free:8080/redmine')
+    disp('-------------------------------------------------------------------------------------------')
     disp(' --> To start the graphical version of LUKE, run ''iluke''')
     disp(' --> To start the command line version of LUKE, run ''irunluke_jd''')
+    disp(' --> Move to ~/LUKE/Simulations/Benchmarks/ to run LUKE simple scripts examples')
+    disp(' --> Move to ~/LUKE/Simulations/Examples/ to run LUKE complex scripts examples')
+    disp('-------------------------------------------------------------------------------------------')
     %
 else
     %
