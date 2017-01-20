@@ -25,7 +25,7 @@ else
         [res(2),txt{2}] = unix(cvsrights);
     else
         res(2) = NaN;
-        txt{2} = '';%
+        txt{2} = '';%%
     end
 end
 %
