@@ -44,7 +44,7 @@ else
         job.remotedatapath = gitcmd(4:igitcmd(1)-1);
         job.directsearch =  1;
         %
-        [res,txt{igit}] = matremotecmd(remote,job,gitcmd,remote.sshopts);
+        [res,txt{igit}] = matremotecmd(remote,job,gitcmd);
         %
         if debugmode,
              txt{igit} = [txt{igit},'----debugmode:cmd--->',gitcmd,'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
