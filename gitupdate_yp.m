@@ -41,10 +41,15 @@ else
         end
         %
         igitcmd = strfind(gitcmd,';');
-        job.remotedatapath = gitcmd(4:igitcmd(1)-1);
-        job.directsearch =  1;
-        %
-        [res,txt{igit}] = matremotecmd(remote,job,gitcmd);
+        if ~isempty(igitcmd),
+            job.remotedatapath = gitcmd(4:igitcmd(1)-1);
+            job.directsearch =  1;
+            %
+            [res,txt{igit}] = matremotecmd(remote,job,gitcmd);
+        else
+            res=-1;
+            txt{igit}='Error: no git cmd in remote profile';
+        end
         %
         if debugmode,
              txt{igit} = [txt{igit},'----debugmode:cmd--->',gitcmd,'----debugmode:folder--->',folder,'----debugmode:workpath--->',workpath];   
