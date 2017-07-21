@@ -16,6 +16,11 @@ function datetime = get_datetime_yp(txt)
 %
 months = ['Jan';'Feb';'Mar';'Apr';'May';'Jun';'Jul';'Aug';'Sep';'Oct';'Nov';'Dec'];
 %
+if ~isempty(strfind(txt,'Warning: No xauth data; using fake authentication data for X11 forwarding.')),%may exist fortuitly after system update. Avoid loss of simulations
+    refstr = 'Warning: No xauth data; using fake authentication data for X11 forwarding.';
+    txt = txt(max(strfind(txt,refstr))+length(refstr):end);          
+end
+%
 if ~isempty(strfind(txt,'bind:')) && ~isempty(strfind(txt,'forwarding.'))
     refstr = 'forwarding.';
     txt = txt(max(strfind(txt,refstr))+length(refstr):end);          
