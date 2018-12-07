@@ -21,8 +21,7 @@ function [val_out,mod] = input_dke_yp(string,default,values,message,forcesize)
 %		  (same type as values)
 %       - mod     : 1 if value different from default value, 0 otherwise
 %
-% by Y.PEYSSON CEA/DSM/IRFM <yves.peysson@cea.fr> 
-% and J.DECKER CEA/DSM/IRFM <joan.decker@cea.fr>
+% by Y.PEYSSON CEA/DSM/IRFM <yves.peysson@cea.fr> and J.DECKER CEA/DSM/IRFM <joan.decker@cea.fr>
 %
 if nargin < 5
     forcesize = [];
