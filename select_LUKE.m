@@ -166,17 +166,28 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
         startup_LUKE_yp(luke_root);
     end
     %
+    sep = strfind(luke_root,'/');
+    luke_branch = luke_root(sep(end-1)+1:sep(end)-1);
+    %
     disp(' ');
     disp('-------------------------------------------------------------------------------------------')
-    disp('IMPORTANT: For tutorial, wiki, news, user forum, repository status, bug tracking related to')
-    disp('LUKE, MatRemote, MatTools and MatHelp toolboxes, please go to the Redmine project manager')
-    disp('at the web address: http://tolbachik.hd.free:8080/redmine')
+    disp('IMPORTANT: For tutorial, wiki, news, user forum, repository status, bug tracking related to ')
+    disp('any Git branch of LUKE, MatRemote, MatTools and MatHelp toolboxes, please go to the Redmine')
+    disp('project manager at the web address: https://spcsrv18.epfl.ch/redmine')
     disp('-------------------------------------------------------------------------------------------')
-    %disp(' --> To start the graphical version of LUKE, run ''iluke''')
-    disp(' --> To start single time simulation with LUKE, run ''irunluke_jd''')
-    disp(' --> To start the command line version of LUKE, run ''irunluke_jd''')
-    disp(' --> Move to ~/LUKE/Simulations/Benchmarks/ to run LUKE simple scripts examples')
-    disp(' --> Move to ~/LUKE/Simulations/Examples/ to run LUKE complex scripts examples')
+    %
+    disp(' --> To start single time simulation, run ''irunluke_jd'' in the command window')
+    disp(' --> To start the simulation with script, run ''sluke'' in the command window')
+    disp(' --> To start multitime simulation, run ''iluke'' in the command window')
+    %
+    if length(luke_branch) > 0
+        disp([' --> Move to ~/',luke_branch,'/Simulations/Benchmarks/ to run simple test scripts'])
+        disp([' --> Move to ~/',luke_branch,'/Simulations/Examples/ to run complex test scripts'])
+    else
+        disp(' --> Move to ~/LUKE/Simulations/Benchmarks/ to run simple test scripts')
+        disp(' --> Move to ~/LUKE/Simulations/Examples/ to run complex test scripts')
+    end
+    
     disp('-------------------------------------------------------------------------------------------')
     %
 else
