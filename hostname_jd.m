@@ -10,8 +10,8 @@ if s ~= 0 | (s == 0 & strfind(lochostname,'localhost'))
 	[s,lochostname] = system('hostname');% local hostname     
 end
 %
-if s ~= 0,
-    if isempty(lochostname),
+if s ~= 0
+    if isempty(lochostname)
         error('local hostname could not be retrieved either from ''hostname -f'' or ''getenv(''hostname'')''');
     end
 end
