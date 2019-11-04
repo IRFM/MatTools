@@ -6,7 +6,7 @@ function lochostname = hostname_jd
 %
 [s,lochostname] = system('hostname -f');% local hostname
 %
-if s ~= 0 || (s == 0 && strfind(lochostname,'localhost'))
+if s ~= 0 | (s == 0 & strfind(lochostname,'localhost'))
 	[s,lochostname] = system('hostname');% local hostname     
 end
 %
