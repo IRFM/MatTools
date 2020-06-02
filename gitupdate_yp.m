@@ -45,7 +45,18 @@ else
             job.remotedatapath = gitcmd(4:igitcmd(1)-1);
             job.directsearch =  1;
             %
-            [res,txt{igit}] = matremotecmd(remote,job,gitcmd);
+            if isempty(remote.link_mode),
+                for ilink_mode = 0:2,%(0) direct link, (1) ssh link, (2) url/ftp link
+                    remote.link_mode = ilink_mode;
+                    [res,txt{igit}] = matremotecmd(remote,job,gitcmd);
+                    if res<=1, 
+                        remote.link_mode = '';
+                        break
+                    end
+                end      
+            else
+                [res,txt{igit}] = matremotecmd(remote,job,gitcmd);
+            end
         else
             res=-1;
             txt{igit}='Error: no git cmd in remote profile';
