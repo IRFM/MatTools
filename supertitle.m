@@ -4,7 +4,15 @@ function supertitle(a,b,c)
 %
 if exist('sgtitle')
     %
-    sgtitle(sprintf([a,'\nURx: upper row index, LRx: lower row index, Mx: module numbering, Ax: ALOHA numbering']),b,c);
+    if nargin == 3 && ~isempty(b) && ~isempty(c)
+        %
+        sgtitle(sprintf([a,'\nURx: upper row index, LRx: lower row index, Mx: module numbering, Ax: ALOHA numbering']),b,c);
+        %
+    else
+        %
+        sgtitle(sprintf([a,'\nURx: upper row index, LRx: lower row index, Mx: module numbering, Ax: ALOHA numbering']));
+        %
+    end
     %
 elseif exist('suptitle')
     %
