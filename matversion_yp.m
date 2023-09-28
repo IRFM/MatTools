@@ -26,7 +26,7 @@ v = version;
 %
 [iv] = strfind(v,'.');
 if iv(2)-iv(1) == 2
-    if str2double(v(1)) > 5 % since R2023b
+    if str2double(v(1)) > 5 % since R2023b 
 	    matlab_version = [v(1:iv(1)-1),'0',v(iv(1)+1:iv(2)-1)];
     else
         matlab_version = [v(1:iv(1)-1),v(iv(1)+1:iv(2)-1)];
