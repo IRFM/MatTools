@@ -10,17 +10,37 @@ if nargin < 1,
 	type = 'local';
 end
 %
-if str2double(matversion_yp) <= 801,%used until matlab R2013a
-    [~,configs] = defaultParallelConfig;% configurations present in user preferences file (old syntax)
+[matlab_version,matlab_release,flag_toolbox] = matversion_yp;
+%
+if str2double(matlab_version) <= 801 && str2double(matlab_release(2:end-1)) < 2023,%used until matlab R2013a
+    try
+        [~,configs] = defaultParallelConfig;% configurations present in user preferences file (old syntax)
+    catch
+        
+    end
 else
-    configs = {parallel.defaultClusterProfile};% configurations present in user preferences file
+    try
+        configs = {parallel.defaultClusterProfile};% configurations present in user preferences file
+    catch
+        
+    end
 end
 %
 nconfs = length(configs);
 %
 % test if type is an existing configuration among imported configurations
 %
-iconfig = find(strcmp(configs,type));
+if strcmp(type,'local')
+    %
+    iconfig = find(strcmp(configs,type));%old syntax
+    %
+    if ~isempty(iconfig)
+        return
+    else
+        iconfig = find(strcmp(configs,'Processes'));%new syntax
+    end
+    %
+end
 %
 if ~isempty(iconfig),
     configuration = configs{iconfig};
