@@ -124,6 +124,8 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 % Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com
 % $Revision: 1.12 $  $Date: 2021/04/07 01:02:53 $
 
+  pause(0.5)
+  
   persistent majorVersion minorVersion
   if isempty(majorVersion)
       %v = version; if str2double(v(1:3)) <= 7.1
