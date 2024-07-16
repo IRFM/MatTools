@@ -1,4 +1,4 @@
-function [git_res,branches,workpath] = gitcmd(git_command)
+function [git_res,active_branch,branches,workpath] = gitcmd(git_command)
 %
 % LUKE - Execute a git command on the local folder.  
 % 
@@ -10,6 +10,7 @@ function [git_res,branches,workpath] = gitcmd(git_command)
 % Output : 
 %
 %    - git_res : output of the git command
+%    - active_branch : active git branch
 %    - branches : list of the git branches
 %    - workpath : working folder
 %
