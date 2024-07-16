@@ -23,6 +23,7 @@ if nargin == 0
 end
 %
 workpath = pwd;
+
 %
 [status, username] = unix('whoami');%local username
 username = deblank(username);
