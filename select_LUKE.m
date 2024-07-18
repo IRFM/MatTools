@@ -191,11 +191,12 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     %
     dkepath = load_structures_yp('dkepath','','');
     %
+    disp('-------------------------------------------------------------------------------------------')
+    %
     if isfield(dkepath,'luke_gitbranch')
         %
         [git_res,active_branch,branches,workpath] = gitcmd(['git checkout ',dkepath.luke_gitbranch]);
-        %
-        disp('--> The active git branch enforce as defined in dkepath.');
+        disp('---> The active git branch enforce as defined in dkepath.');
         %
     end
     %
