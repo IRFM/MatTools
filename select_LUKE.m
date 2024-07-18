@@ -36,7 +36,6 @@ function select_LUKE(luke_root,link_mode,display_mode,lukemenu_mode)
 % %
 % lukeversions = {...
 %    'pathtoLUKE/LUKE/',...
-%    'pathtoLUKE/LUKE_1_10/',...
 %    };
 % %
 % setappdata(0,'lukeversions',lukeversions)
@@ -172,8 +171,8 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     disp(' ');
     disp('-------------------------------------------------------------------------------------------')
     disp('IMPORTANT: For tutorial, wiki, news, user forum, repository status, bug tracking related to ')
-    disp('any Git branch of LUKE, MatRemote, MatTools and MatHelp toolboxes, please go to the Redmine')
-    disp('project manager at the web address: https://spcsrv18.epfl.ch/redmine')
+    disp('any Git branch of LUKE, MatRemote, MatTools and MatHelp toolboxes, please go to the Forgejo')
+    disp('git project manager at the web address: https://forgejo.yvespeysson.fr')
     disp('-------------------------------------------------------------------------------------------')
     %
     disp(' --> To start single time simulation, run ''irunluke_jd'' in the command window')
