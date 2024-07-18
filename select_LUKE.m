@@ -166,7 +166,7 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     end
     %
     sep = strfind(luke_root,'/');
-    luke_branch = luke_root(sep(end-1)+1:sep(end)-1);
+    luke_project = luke_root(sep(end-1)+1:sep(end)-1);
     %
     disp(' ');
     disp('-------------------------------------------------------------------------------------------')
@@ -179,14 +179,29 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     disp(' --> To start the simulation with script, run ''sluke'' in the command window')
     disp(' --> To start multitime simulation, run ''iluke'' in the command window')
     %
-    if length(luke_branch) > 0
-        disp([' --> Move to ~/',luke_branch,'/Simulations/Benchmarks/ to run simple test scripts'])
-        disp([' --> Move to ~/',luke_branch,'/Simulations/Examples/ to run complex test scripts'])
+    if length(luke_project) > 0
+        disp([' --> Move to ~/',luke_project,'/Simulations/Benchmarks/ to run simple test scripts'])
+        disp([' --> Move to ~/',luke_project,'/Simulations/Examples/ to run complex test scripts'])
     else
         disp(' --> Move to ~/LUKE/Simulations/Benchmarks/ to run simple test scripts')
         disp(' --> Move to ~/LUKE/Simulations/Examples/ to run complex test scripts')
     end
-    
+    %
+    % Set local git branch if defined in dkepath
+    %
+    dkepath = load_structures_yp('dkepath','','');
+    %
+    if isfield(dkepath,'luke_gitbranch')
+        %
+        [git_res,active_branch,branches,workpath] = gitcmd(['git checkout ',dkepath.luke_gitbranch]);
+        %
+        disp('--> The active git branch enforce as defined in dkepath.');
+        %
+    end
+    %
+    [git_res,active_branch,branches,workpath] = gitcmd;
+    disp(['---> Active git branch : ',active_branch]);
+    %
     disp('-------------------------------------------------------------------------------------------')
     %
 else
