@@ -167,6 +167,7 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     %
     sep = strfind(luke_root,'/');
     luke_project = luke_root(sep(end-1)+1:sep(end)-1);
+    cd(luke_root)
     %
     disp(' ');
     disp('-------------------------------------------------------------------------------------------')
@@ -183,8 +184,8 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
         disp([' --> Move to ~/',luke_project,'/Simulations/Benchmarks/ to run simple test scripts'])
         disp([' --> Move to ~/',luke_project,'/Simulations/Examples/ to run complex test scripts'])
     else
-        disp(' --> Move to ~/LUKE/Simulations/Benchmarks/ to run simple test scripts')
-        disp(' --> Move to ~/LUKE/Simulations/Examples/ to run complex test scripts')
+        disp(' --> Move to ~/LUKE_XXX/Simulations/Benchmarks/ to run simple test scripts')
+        disp(' --> Move to ~/LUKE_XXX/Simulations/Examples/ to run complex test scripts')
     end
     %
     % Set local git branch if defined in dkepath
@@ -193,17 +194,24 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     %
     disp('-------------------------------------------------------------------------------------------')
     %
-    if isfield(dkepath,'luke_gitbranch')
+    if exist('.git')
         %
-        [git_res,active_branch,branches,workpath] = gitcmd(['git checkout ',dkepath.luke_gitbranch]);
-        disp('---> The active git branch enforce as defined in dkepath.');
+        if isfield(dkepath,'luke_gitbranch')
+            %
+            [git_res,active_branch,branches,workpath] = gitcmd(['git checkout ',dkepath.luke_gitbranch]);
+            disp('---> The active git branch enforce as defined in dkepath.');
+            %
+        end
         %
+        [git_res,active_branch,branches,workpath] = gitcmd;
+        disp(['---> Active git branch : ',active_branch]);
+        %
+        disp('-------------------------------------------------------------------------------------------')
+        %
+    else
+        %
+        disp(['WARNING : There is no .git file in the folder ''',luke_root,'''. The folder is not under Git version control.'])
     end
-    %
-    [git_res,active_branch,branches,workpath] = gitcmd;
-    disp(['---> Active git branch : ',active_branch]);
-    %
-    disp('-------------------------------------------------------------------------------------------')
     %
 else
     %
