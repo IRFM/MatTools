@@ -1,4 +1,4 @@
-function [git_res,active_branch,branches,workpath] = gitcmd(git_command)
+function [git_res,active_branch,branches,workpath] = gitcmd(git_command,workpath)
 %
 % LUKE - Execute a git command on the local folder.  
 % 
@@ -6,6 +6,8 @@ function [git_res,active_branch,branches,workpath] = gitcmd(git_command)
 %
 %   - git_command : git command [1,p]
 %     (default : 'git status')
+%   - workpath : considered folder [1,p]
+%     (default : pwd)
 %
 % Output : 
 %
@@ -19,15 +21,24 @@ function [git_res,active_branch,branches,workpath] = gitcmd(git_command)
 if nargin == 0
     %
     git_command = 'git status';
+    workpath = pwd;
+    %
+elseif nargin == 1
+    %
+    workpath = pwd;
     %
 end
 %
-workpath = pwd;
+if isempty(git_command)
+    %
+    git_command = 'git status';
+    %
+end
 %
 [status, username] = unix('whoami');%local username
 username = deblank(username);
 %
-if exist('.git')
+if exist([workpath,'/.git'])
     %
     [status, git_res] = system(['ssh ',username,'@localhost "cd ',workpath,';',git_command,'"']);
     %
@@ -51,6 +62,10 @@ if exist('.git')
     %
 else
     %
-    disp('You are not place in a folder under Git control. The branch cannot be determined.')
+    disp(['The folder ''',workpath,''' is not under Git control. The branch cannot be determined.'])
+    %
+    git_res = [];
+    active_branch = [];
+    branches = [];
     %
 end
