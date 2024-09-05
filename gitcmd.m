@@ -23,28 +23,34 @@ if nargin == 0
 end
 %
 workpath = pwd;
-
 %
 [status, username] = unix('whoami');%local username
 username = deblank(username);
 %
-[status, git_res] = system(['ssh ',username,'@localhost "cd ',workpath,';',git_command,'"']);
-%
-[status, cmdout] = system(['ssh ',username,'@localhost "cd ',workpath,';git branch"']);
-branches = strsplit(deblank(cmdout),'\n');
-%
-branches = strsplit(deblank(cmdout),'\n');
-%
-for ib = 1:length(branches)
+if exist('.git')
     %
-    branches{ib} = strtrim(branches{ib});
+    [status, git_res] = system(['ssh ',username,'@localhost "cd ',workpath,';',git_command,'"']);
     %
-    if strfind(branches{ib},'*')
+    [status, cmdout] = system(['ssh ',username,'@localhost "cd ',workpath,';git branch"']);
+    branches = strsplit(deblank(cmdout),'\n');
+    %
+    branches = strsplit(deblank(cmdout),'\n');
+    %
+    for ib = 1:length(branches)
         %
-        active_branch = branches{ib}(3:end);
-        branches{ib} = active_branch;
+        branches{ib} = strtrim(branches{ib});
+        %
+        if strfind(branches{ib},'*')
+            %
+            active_branch = branches{ib}(3:end);
+            branches{ib} = active_branch;
+            %
+        end
         %
     end
     %
+else
+    %
+    disp('You are not place in a folder under Git control. The branch cannot be determined.')
+    %
 end
-%
