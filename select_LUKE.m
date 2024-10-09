@@ -198,8 +198,17 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
         %
         if isfield(dkepath,'luke_gitbranch')
             %
+            if ~isempty(dkepath.luke_gitbranch)
+                %
+                disp('---> The active git branch is enforced as defined in dkepath.luke_gitbranch.');
+                %
+            else
+                %
+                 disp('---> The active git branch is not defined in dkepath or dkepath.luke_gitbranch is empty.');
+                %
+            end
+            %
             [git_res,active_branch,branches,workpath] = gitcmd(['git checkout ',dkepath.luke_gitbranch]);
-            disp('---> The active git branch enforce as defined in dkepath.');
             %
         end
         %
