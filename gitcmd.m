@@ -18,14 +18,27 @@ function [git_res,active_branch,branches,workpath] = gitcmd(git_command,workpath
 %
 % by Y.Savoye-Peysson (CEA/DSM/IRFM) <yves.savoye-peysson@cea.fr>
 %
-if nargin == 0
+if nargin <= 1
     %
     git_command = 'git status';
-    workpath = pwd;
     %
-elseif nargin == 1
+    folderlist = strsplit(pwd,'/');
     %
-    workpath = pwd;
+    workpath = ['/',folderlist{2},'/',folderlist{3}];
+    %
+    for jj = 4:length(folderlist)
+        %
+        workpath = [workpath,'/',folderlist{jj}];
+        %
+        if exist([workpath,'/.git'])
+            %
+            break
+            %
+        end
+        %
+    end
+    %
+    git_command = 'git status';
     %
 end
 %
@@ -37,6 +50,7 @@ end
 %
 [status, username] = unix('whoami');%local username
 username = deblank(username);
+%
 %
 if exist([workpath,'/.git'])
     %
