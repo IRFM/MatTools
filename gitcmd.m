@@ -54,12 +54,13 @@ username = deblank(username);
 %
 if exist([workpath,'/.git'])
     %
-    [status, git_res] = system(['ssh ',username,'@localhost "cd ',workpath,';',git_command,'"']);
+    [status, git_res] = system(['timeout 10 ssh ',username,'@localhost "cd ',workpath,';',git_command,'"']);
     %
-    [status, cmdout] = system(['ssh ',username,'@localhost "cd ',workpath,';git branch"']);
-    branches = strsplit(deblank(cmdout),'\n');
+    [status, cmdout] = system(['timeout 10 ssh ',username,'@localhost "cd ',workpath,';git branch"']);
     %
-    branches = strsplit(deblank(cmdout),'\n');
+    branches = strsplit(deblank(cmdout),newline);
+    %
+    active_branch = [];
     %
     for ib = 1:length(branches)
         %
