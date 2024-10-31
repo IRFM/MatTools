@@ -48,17 +48,24 @@ if isempty(git_command)
     %
 end
 %
-warning_ssh = ['ERROR : The ssh connection to the local machine is not fully set or is broken. Before running this simulation, please type in a bash shell the following command: ' ...
- '''ssh YOURUSERNAME@THEMACHINEADDRESS'' and allow it to be trusted in the ssh server list by typing ''Yes''. '...
- 'This operation should be done only once on all remote computers where LUKE is supposed to be running and the local machine itself (self ssh connection). '...
- 'For the local machine ''THEMACHINEADDRESS'' is ''localhost'', and ''YOURUSERNAME'' may be obtained by typing the command ''whoami''.'];
-%
+
 [status, username] = unix('whoami');%local username
 username = deblank(username);
 %
+[status, hostname] = unix('hostname');%local hostname
+hostname = deblank(hostname);
+hostname1 = strsplit(hostname,'.');
+hostname = hostname1{1};%first term for local connection 
+%
+warning_ssh = ['ERROR : The ssh connection to the local machine whose hostname is ''',hostname,''' is not fully set or is broken. ' ...
+ 'Before running this simulation, please type in a bash shell the following command: ' ...
+ '''ssh YOURUSERNAME@',hostname,''' and allow it to be trusted in the ssh server list by typing ''Yes''. '...
+ 'This operation should be done only once on all remote computers where LUKE is supposed to be running and the local machine itself (self ssh connection). '...
+ 'The ''YOURUSERNAME'' may be obtained by typing the command ''whoami''.'];
+%
 if exist([workpath,'/.git'])
     %
-    [status, git_res] = system(['timeout 10 ssh ',username,'@localhost "cd ',workpath,';',git_command,'" || echo "',warning_ssh,'"']);
+    [status, git_res] = system(['timeout 10 ssh ',username,'@',hostname,' "cd ',workpath,';',git_command,'" || echo "',warning_ssh,'"']);
     %
     if strcmp(warning_ssh,deblank(git_res))
         %
@@ -66,7 +73,7 @@ if exist([workpath,'/.git'])
         %
     end
     %
-    [status, cmdout] = system(['timeout 10 ssh ',username,'@localhost "cd ',workpath,';git branch" || echo "',warning_ssh,'"']);
+    [status, cmdout] = system(['timeout 10 ssh ',username,'@',hostname,' "cd ',workpath,';git branch" || echo "',warning_ssh,'"']);
     %
     if strcmp(warning_ssh,deblank(cmdout))
         %
