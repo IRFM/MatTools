@@ -20,7 +20,7 @@ function [git_res,active_branch,branches,workpath] = gitcmd(git_command,workpath
 %
 if nargin <= 1
     %
-    git_command = 'git status';
+    git_command = 'git status uno';
     %
     folderlist = strsplit(pwd,'/');
     %
@@ -38,13 +38,13 @@ if nargin <= 1
         %
     end
     %
-    git_command = 'git status';
+    git_command = 'git status uno';
     %
 end
 %
 if isempty(git_command)
     %
-    git_command = 'git status';
+    git_command = 'git status uno';
     %
 end
 %
