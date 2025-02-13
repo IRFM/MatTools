@@ -10,6 +10,7 @@ if ~strcmp(method,'csape')
         ds = orig_size_v(2:end);
         prodDs = size(V,2);
     end
+    
 
     switch method(1)
         case 'n' % nearest
@@ -53,6 +54,8 @@ if ~strcmp(method,'csape')
                 % data are not equally spaced
                 pp = spline(X.',reshape(V.',[ds, n]));
             end
+        otherwise
+            error('Unknown interpolation method.');
     end
     %
     pp.orient = 'first';
