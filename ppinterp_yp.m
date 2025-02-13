@@ -24,6 +24,8 @@ if ~strcmp(method,'csape')
             page2 = (reshape(V(1:end-1,:),[n-1, prodDs])).';
             coefs = cat(3,page1,page2);
             pp = mkpp(breaks,coefs,ds);
+        case 'm' % makima
+            pp = makima(X.',reshape(V.',[ds, n]));
         case 'p' % pchip and cubic
             pp = pchip(X.',reshape(V.',[ds, n]));
         case 's' % spline
