@@ -88,13 +88,17 @@ if exist([workpath,'/.git'])
     %
     [status, git_res] = system(['timeout 10 ssh ',username,'@',hostname,' "cd ',workpath,';',git_command,'" || echo "',warning_ssh,'"']);
     %
-    if strcmp(warning_ssh,deblank(git_res))
+    git_res = deblank(git_res);
+    %
+    if strcmp(warning_ssh,git_res)
         %
         disp(['WARNING : The ssh connection to the local machine ''ssh YOURUSERNAME@',hostname,''' is not fully set or is broken. The alternative command ''ssh YOURUSERNAME@localhost'' will be used instead to execute the git command anyway.'])
         %
         [status1, git_res1] = system(['timeout 10 ssh ',username,'@localhost "cd ',workpath,';',git_command,'" || echo "',warning_ssh1,'"']);
         %
-        if strcmp(warning_ssh1,deblank(git_res1))
+        git_res1 = deblank(git_res1);
+        %
+        if strcmp(warning_ssh1,git_res1)
             %
             error(warning_ssh);
             %
