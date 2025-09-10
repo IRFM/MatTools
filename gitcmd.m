@@ -110,7 +110,7 @@ if exist([workpath,'/.git'])
         %
     end
     %
-    branches = strsplit(deblank(cmdout),newline);
+    branches = strsplit(deblank(cmdout),newline_yp);
     %
     active_branch = [];
     %
