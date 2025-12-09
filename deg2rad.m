@@ -4,9 +4,10 @@ function angleInRadians = deg2rad(angleInDegrees)
 %   element of X.
 %
 %   See also RAD2DEG.
-
 % Copyright 2015 The MathWorks, Inc.
-
+%
+% For use of this function with Matlab prior release R2015B because it was missing
+%
 if isfloat(angleInDegrees)
     angleInRadians = (pi/180) * angleInDegrees;
 else
