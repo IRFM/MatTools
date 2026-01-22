@@ -181,8 +181,7 @@ if ~isempty(luke_root) && exist([luke_root,'Project_DKE/DKE'],'dir') && lukemenu
     end
     %
     sep = strfind(luke_root,'/');
-    luke_project = luke_root(sep(end-1)+1:sep(end)-1);
-    cd(luke_root)
+    luke_branch = luke_root(sep(end-1)+1:sep(end)-1);
     %
     disp(' ');
     disp('-------------------------------------------------------------------------------------------')
