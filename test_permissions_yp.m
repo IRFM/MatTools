@@ -17,7 +17,6 @@ function [flag] = test_permissions_yp(foldername)
 %
 if nargin == 0
     foldername = '.';
-    foldername = './';
 end
 %
 flag = 1;
